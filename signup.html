@@ -1,23 +1,34 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Signup</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
 
-<h2>Signup</h2>
+  <div class="form-container">
+    <h2>Signup</h2>
 
-<input type="email" id="email" placeholder="Email"><br><br>
-<input type="password" id="password" placeholder="Password"><br><br>
+    <input type="email" id="email" placeholder="Enter Email">
+    <input type="password" id="password" placeholder="Enter Password">
 
-<select id="role">
-  <option value="fresher">Fresher</option>
-  <option value="experienced">Experienced</option>
-</select><br><br>
+    <select id="role">
+      <option value="fresher">Fresher</option>
+      <option value="experienced">Experienced</option>
+    </select>
 
-<button onclick="signup()">Signup</button>
+    <button id="signupBtn">Signup</button>
 
-<script type="module" src="js/auth.js"></script>
+    <p>Already have an account? <a href="login.html">Login</a></p>
+  </div>
+
+  <script type="module">
+    import { signup } from "./js/auth.js";
+
+    document.getElementById("signupBtn").addEventListener("click", signup);
+  </script>
 
 </body>
 </html>
