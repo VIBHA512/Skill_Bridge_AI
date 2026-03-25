@@ -1,22 +1,35 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Login</title>
+  <link rel="stylesheet" href="./css/style.css">
 </head>
+
 <body>
 
+  <div class="form-container">
+    <h2>Login</h2>
 
-<div class="form-container">
-  <h2>Login</h2>
+    <input type="email" id="email" placeholder="Enter Email">
+    <input type="password" id="password" placeholder="Enter Password">
 
-  <input type="email" id="email" placeholder="Email">
-  <input type="password" id="password" placeholder="Password">
+    <button id="loginBtn">Login</button>
 
-  <button onclick="login()">Login</button>
-</div>
+    <p>Don't have an account? <a href="signup.html">Signup</a></p>
+  </div>
 
-<script type="module" src="js/auth.js"></script>
-  <link rel="stylesheet" href="./css/style.css">
+  <!-- ✅ FIXED SCRIPT -->
+  <script type="module">
+    import { login } from "./js/auth.js";
+
+    const btn = document.getElementById("loginBtn");
+
+    btn.addEventListener("click", () => {
+      console.log("Button clicked");   // 🔍 debug
+      login();
+    });
+  </script>
 
 </body>
 </html>
