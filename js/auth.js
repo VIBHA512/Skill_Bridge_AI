@@ -1,5 +1,24 @@
 // js/auth.js
+export async function signup() {
+  try {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const role = document.getElementById("role").value;
 
+    const userCred = await createUserWithEmailAndPassword(auth, email, password);
+
+    await setDoc(doc(db, "users", userCred.user.uid), {
+      email: email,
+      role: role
+    });
+
+    alert("Signup successful!");
+    window.location.href = "login.html";
+
+  } catch (error) {
+    alert(error.message);
+  }
+}
 import { auth, db } from "./firebase.js";
 import {
   createUserWithEmailAndPassword,
