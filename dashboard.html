@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard - Skill Bridge</title>
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <h1>Skill Bridge</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="#" id="logoutBtn">Logout</a>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <h2 id="welcomeText">Welcome 🚀</h2>
+    <p id="roleText">Loading...</p>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features" id="featuresSection">
+    <!-- Dynamic content will come here -->
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2026 Skill Bridge | Built by Vibha</p>
+  </footer>
+
+  <!-- SCRIPT -->
+  <script type="module">
+    import { auth, db } from "./js/firebase.js";
+    import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const welcomeText = document.getElementById("welcomeText");
+    const roleText = document.getElementById("roleText");
+    const features = document.getElementById("featuresSection");
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      const docRef = doc(db, "users", user.uid);
+      const userData = await getDoc(docRef);
+
+      if (!userData.exists()) {
+        alert("User data missing");
+        return;
+      }
+
+      const role = userData.data().role;
+
+      // 🎯 Update UI
+      if (role === "fresher") {
+        welcomeText.innerText = "Welcome Fresher 🎓";
+        roleText.innerText = "Start your journey with beginner resources";
+
+        features.innerHTML = `
+          <div class="card">
+            <h3>📘 Roadmap</h3>
+            <p>Learn step-by-step from basics</p>
+          </div>
+          <div class="card">
+            <h3>💻 Projects</h3>
+            <p>Build beginner-friendly projects</p>
+          </div>
+          <div class="card">
+            <h3>🎯 Internships</h3>
+            <p>Find your first opportunity</p>
+          </div>
+        `;
+      } else {
+        welcomeText.innerText = "Welcome Experienced 💼";
+        roleText.innerText = "Upgrade your career with advanced tools";
+
+        features.innerHTML = `
+          <div class="card">
+            <h3>🚀 Advanced Skills</h3>
+            <p>Level up your expertise</p>
+          </div>
+          <div class="card">
+            <h3>🧠 System Design</h3>
+            <p>Prepare for top interviews</p>
+          </div>
+          <div class="card">
+            <h3>💼 Jobs</h3>
+            <p>Explore better opportunities</p>
+          </div>
+        `;
+      }
+    });
+
+    // 🔐 Logout
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    });
+
+  </script>
+
+</body>
+</html>
