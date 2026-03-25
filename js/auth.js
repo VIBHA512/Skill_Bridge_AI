@@ -45,7 +45,10 @@ export async function login() {
 
     const docRef = doc(db, "users", userCred.user.uid);
     const userData = await getDoc(docRef);
-
+if (!userData.exists()) {
+  alert("User data not found. Please signup again.");
+  return;
+}
     const role = userData.data().role;
 
     if (role === "fresher") {
