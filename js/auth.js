@@ -59,9 +59,9 @@ if (!userData.exists()) {
     const role = userData.data().role;
 
     if (role === "fresher") {
-      window.location.href = "fresher.html";
+      window.location.href = "dashboard.html";
     } else {
-      window.location.href = "experienced.html";
+      window.location.href = "dashboard.html";
     }
 
   } catch (error) {
