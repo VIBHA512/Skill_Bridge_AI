@@ -20,17 +20,24 @@ export async function signup() {
     const password = document.getElementById("password").value;
     const role = document.getElementById("role").value;
 
+    console.log("Signup started");  // 👈 DEBUG
+
     const userCred = await createUserWithEmailAndPassword(auth, email, password);
+
+    console.log("User created:", userCred.user.uid);  // 👈 DEBUG
 
     await setDoc(doc(db, "users", userCred.user.uid), {
       email: email,
       role: role
     });
 
+    console.log("Data saved to Firestore");  // 👈 DEBUG
+
     alert("Signup successful!");
     window.location.href = "login.html";
 
   } catch (error) {
+    console.log("ERROR:", error);  // 👈 VERY IMPORTANT
     alert(error.message);
   }
 }
