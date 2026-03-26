@@ -85,74 +85,132 @@
   <!-- SCRIPT -->
   <script type="module">
 
-    // 🎯 ANALYZE
-   document.getElementById("analyzeBtn").addEventListener("click", () => {
-  const skills = document.getElementById("skillsInput").value.toLowerCase().split(",");
+// 🎯 CAREER DATA (FIXED FORMAT)
+const careerSkills = {
+  "AI Engineer": {
+    "python": { level: "intermediate", weight: 0.25 },
+    "deep learning": { level: "advanced", weight: 0.2 },
+    "tensorflow": { level: "intermediate", weight: 0.2 },
+    "machine learning": { level: "advanced", weight: 0.2 },
+    "nlp": { level: "intermediate", weight: 0.15 }
+  },
 
-  const required = ["python", "machine learning", "deep learning", "nlp", "tensorflow"];
+  "Web Developer": {
+    "html": { level: "advanced", weight: 0.25 },
+    "css": { level: "advanced", weight: 0.25 },
+    "javascript": { level: "advanced", weight: 0.3 },
+    "react": { level: "intermediate", weight: 0.2 }
+  },
 
-  const matched = required.filter(skill => skills.includes(skill.trim()));
-  const missing = required.filter(skill => !skills.includes(skill.trim()));
+  "Data Scientist": {
+    "python": { level: "advanced", weight: 0.3 },
+    "machine learning": { level: "advanced", weight: 0.25 },
+    "statistics": { level: "intermediate", weight: 0.2 },
+    "sql": { level: "intermediate", weight: 0.15 },
+    "data visualization": { level: "intermediate", weight: 0.1 }
+  }
+};
 
-  const techScore = Math.floor((matched.length / required.length) * 100);
-  const softScore = Math.floor(Math.random() * 50 + 50);
-  const overall = Math.floor((techScore + softScore) / 2);
+// 📚 COURSES
+const courseData = {
+  "python": ["Python Bootcamp - Udemy"],
+  "machine learning": ["ML by Andrew Ng - Coursera"],
+  "deep learning": ["Deep Learning Specialization"],
+  "tensorflow": ["TensorFlow Course"],
+  "nlp": ["NLP Course"],
+  "html": ["HTML - freeCodeCamp"],
+  "css": ["CSS - freeCodeCamp"],
+  "javascript": ["JavaScript - freeCodeCamp"],
+  "react": ["React - Udemy"]
+};
 
+// 🔄 NORMALIZE
+function normalize(skill) {
+  return skill.toLowerCase().trim();
+}
+
+// 🚀 ANALYZE
+document.getElementById("analyzeBtn").addEventListener("click", () => {
+
+  const career = document.getElementById("career").value;
+  const userSkillsInput = document.getElementById("skillsInput").value;
+
+  const userSkills = userSkillsInput
+    .split(",")
+    .map(s => normalize(s));
+
+  const requiredSkills = careerSkills[career];
+
+  let matched = [];
+  let missing = [];
+  let score = 0;
+  let totalWeight = 0;
+
+  for (let skill in requiredSkills) {
+
+    totalWeight += requiredSkills[skill].weight;
+
+    if (userSkills.includes(skill)) {
+      matched.push(skill);
+      score += requiredSkills[skill].weight;
+    } else {
+      missing.push(skill);
+    }
+  }
+
+  const techScore = Math.round((score / totalWeight) * 100);
+  const softScore = Math.floor(Math.random() * 30 + 50);
+  const overall = Math.round((techScore + softScore) / 2);
+
+  // 🎯 UPDATE UI
   document.getElementById("techScore").innerText = techScore + "%";
   document.getElementById("softScore").innerText = softScore + "%";
   document.getElementById("overallScore").innerText = overall + "%";
 
-  document.getElementById("yourSkills").innerText = skills.join(", ");
+  document.getElementById("yourSkills").innerText = matched.join(", ");
   document.getElementById("missingSkills").innerText = missing.join(", ");
 
-  document.getElementById("courses").innerHTML =
-    `<li>Machine Learning - Andrew Ng (Coursera)</li>`;
+  // 📚 COURSES
+  let courseHTML = "";
+  missing.forEach(skill => {
+    if (courseData[skill]) {
+      courseData[skill].forEach(c => {
+        courseHTML += `<li>${c}</li>`;
+      });
+    }
+  });
 
-  document.getElementById("roadmap").innerHTML = `
-    <li>Week 1-2: Learn ML basics</li>
-    <li>Week 3-4: Learn TensorFlow</li>
-    <li>Week 5-6: Deep Learning</li>
-    <li>Week 7-8: NLP</li>
-  `;
+  document.getElementById("courses").innerHTML = courseHTML || "<li>No courses needed 🎉</li>";
+
+  // 🗺 ROADMAP
+  let roadmapHTML = "";
+  missing.forEach((skill, index) => {
+    roadmapHTML += `<li>Week ${index+1}: Learn ${skill}</li>`;
+  });
+
+  document.getElementById("roadmap").innerHTML = roadmapHTML;
+
 });
 
-    // 📄 RESUME
-    document.getElementById("uploadBtn").addEventListener("click", () => {
-      const file = document.getElementById("resumeInput").files[0];
 
-      if (!file) {
-        alert("Upload resume first");
-        return;
-      }
+// 🤖 CHATBOT (IMPROVED)
+document.getElementById("chatBtn").addEventListener("click", () => {
 
-      document.getElementById("outputBox").innerHTML =
-        `<h3>Resume Analysis</h3><p>Skills extracted successfully ✅</p>`;
-    });
+  const input = document.getElementById("chatInput").value.toLowerCase();
 
-    // 🤖 CHAT
-    document.getElementById("chatBtn").addEventListener("click", () => {
-  const input = document.getElementById("chatInput").value;
-
-  let reply = "Hey, I can guide you on skills and careers 🚀";
+  let reply = "I can guide you 🚀";
 
   if (input.includes("career")) {
-    reply = "AI Engineer is a great option for you!";
+    reply = "Try AI Engineer, Web Dev or Data Science 🚀";
   }
-
-  if (input.includes("python")) {
-    reply= "With Python, you can explore Data Scientist, AI Engineer, or Backend Developer roles.";
+  else if (input.includes("python")) {
+    reply = "Python opens doors to AI, Data Science & Backend roles";
   }
-
-  if (input.includes("web")) {
-    reply ="You can go for Frontend, Backend, or Full Stack roles. Focus on JavaScript + frameworks.";
+  else if (input.includes("web")) {
+    reply = "Focus on HTML, CSS, JS + React for Web Dev";
   }
-
-  if (input.includes("ai") || input.includes("machine learning")) {
-    reply="Focus on Python, ML, Deep Learning, and real-world projects to become an AI Engineer.";
-  }
-
-  if (input.includes("cyber")) {
-    reply="Cybersecurity needs Networking, Linux, and Ethical Hacking. Start with basics + labs.";
+  else if (input.includes("ai")) {
+    reply = "Learn ML → DL → NLP → Projects 🔥";
   }
 
   document.getElementById("chatOutput").innerHTML += `
@@ -161,23 +219,20 @@
   `;
 });
 
-    // 💡 RECOMMEND
-    document.getElementById("recommendBtn").addEventListener("click", () => {
-      document.getElementById("outputBox").innerHTML =
-        `<h3>Recommended Career</h3><p>Data Scientist 📊</p>`;
-    });
 
-    document.getElementById("progressBtn").addEventListener("click", () => {
-      document.getElementById("outputBox").innerHTML =
-        `<h3>Progress</h3><p>You are 65% ready 🚀</p>`;
-    });
+// 📄 RESUME
+document.getElementById("uploadBtn").addEventListener("click", () => {
+  const file = document.getElementById("resumeInput").files[0];
 
-    document.getElementById("suggestBtn").addEventListener("click", () => {
-      document.getElementById("outputBox").innerHTML =
-        `<h3>Suggestions</h3><p>AI Engineer, Backend Dev</p>`;
-    });
+  if (!file) {
+    alert("Upload resume first");
+    return;
+  }
 
-  </script>
+  alert("Resume analyzed (demo)");
+});
 
+</script>
+  
 </body>
 </html>
