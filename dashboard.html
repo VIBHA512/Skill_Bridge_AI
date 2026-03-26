@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>Dashboard - Skill Bridge</title>
-
   <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -25,37 +23,37 @@
     <p id="roleText">Loading...</p>
   </section>
 
+  <!-- SKILL INPUT -->
   <div class="form-container">
-  <h2>Enter Your Skills</h2>
-  <input type="text" id="skillsInput" placeholder="e.g. HTML, CSS, JS">
-  <button id="analyzeBtn">Analyze</button>
-</div>
-<div class="form-container">
-  <h2>Upload Resume</h2>
-  <input type="file" id="resumeInput">
-  <button onclick="uploadResume()">Upload</button>
-</div>
+    <h2>Enter Your Skills</h2>
+    <input type="text" id="skillsInput" placeholder="e.g. HTML, CSS, JS">
+    <button id="analyzeBtn">Analyze</button>
+  </div>
+
+  <!-- RESULT -->
+  <div class="dashboard" id="resultSection"></div>
+
+  <!-- RESUME -->
+  <div class="form-container">
+    <h2>Upload Resume</h2>
+    <input type="file" id="resumeInput">
+    <button id="uploadBtn">Upload</button>
+  </div>
+
+  <!-- SCORE -->
   <div class="dashboard">
-  <h2>Skill Match Score</h2>
-  <p id="score">0%</p>
-</div>
+    <h2>Skill Match Score</h2>
+    <p id="score">0%</p>
+  </div>
+
+  <!-- CHAT -->
   <div class="form-container">
-  <h2>Ask AI</h2>
-  <input type="text" id="chatInput" placeholder="Ask career question">
-  <button onclick="chat()">Send</button>
-</div>
+    <h2>Ask AI</h2>
+    <input type="text" id="chatInput" placeholder="Ask something">
+    <button id="chatBtn">Send</button>
+  </div>
 
-<div id="chatOutput"></div>
-<div class="dashboard" id="resultSection"></div>
-  <!-- FEATURES -->
-  <section class="features" id="featuresSection">
-    <!-- Dynamic content will come here -->
-  </section>
-
-  <!-- FOOTER -->
-  <footer>
-    <p>© 2026 Skill Bridge | Built by Vibha</p>
-  </footer>
+  <div class="dashboard" id="chatOutput"></div>
 
   <!-- SCRIPT -->
   <script type="module">
@@ -63,10 +61,7 @@
     import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    const welcomeText = document.getElementById("welcomeText");
-    const roleText = document.getElementById("roleText");
-    const features = document.getElementById("featuresSection");
-
+    // AUTH CHECK
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
         window.location.href = "login.html";
@@ -76,57 +71,66 @@
       const docRef = doc(db, "users", user.uid);
       const userData = await getDoc(docRef);
 
-      if (!userData.exists()) {
-        alert("User data missing");
-        return;
-      }
-
       const role = userData.data().role;
 
-      // 🎯 Update UI
       if (role === "fresher") {
-        welcomeText.innerText = "Welcome Fresher 🎓";
-        roleText.innerText = "Start your journey with beginner resources";
-
-        features.innerHTML = `
-          <div class="card">
-            <h3>📘 Roadmap</h3>
-            <p>Learn step-by-step from basics</p>
-          </div>
-          <div class="card">
-            <h3>💻 Projects</h3>
-            <p>Build beginner-friendly projects</p>
-          </div>
-          <div class="card">
-            <h3>🎯 Internships</h3>
-            <p>Find your first opportunity</p>
-          </div>
-        `;
+        document.getElementById("welcomeText").innerText = "Welcome Fresher 🎓";
       } else {
-        welcomeText.innerText = "Welcome Experienced 💼";
-        roleText.innerText = "Upgrade your career with advanced tools";
-
-        features.innerHTML = `
-          <div class="card">
-            <h3>🚀 Advanced Skills</h3>
-            <p>Level up your expertise</p>
-          </div>
-          <div class="card">
-            <h3>🧠 System Design</h3>
-            <p>Prepare for top interviews</p>
-          </div>
-          <div class="card">
-            <h3>💼 Jobs</h3>
-            <p>Explore better opportunities</p>
-          </div>
-        `;
+        document.getElementById("welcomeText").innerText = "Welcome Experienced 💼";
       }
     });
 
-    // 🔐 Logout
+    // LOGOUT
     document.getElementById("logoutBtn").addEventListener("click", async () => {
       await signOut(auth);
       window.location.href = "login.html";
+    });
+
+    // SKILL ANALYSIS
+    document.getElementById("analyzeBtn").addEventListener("click", () => {
+      const skills = document.getElementById("skillsInput").value.toLowerCase();
+
+      let result = "Try adding more skills.";
+
+      if (skills.includes("html") && skills.includes("css")) {
+        result = "Frontend Developer 🚀";
+      } else if (skills.includes("python")) {
+        result = "AI / Data Science 🤖";
+      }
+
+      document.getElementById("resultSection").innerHTML = `<h3>${result}</h3>`;
+    });
+
+    // SCORE
+    const score = Math.floor(Math.random() * 100);
+    document.getElementById("score").innerText = score + "%";
+
+    // RESUME
+    document.getElementById("uploadBtn").addEventListener("click", () => {
+      const file = document.getElementById("resumeInput").files[0];
+
+      if (!file) {
+        alert("Upload file first");
+        return;
+      }
+
+      alert("Resume uploaded (demo)");
+    });
+
+    // CHAT
+    document.getElementById("chatBtn").addEventListener("click", () => {
+      const input = document.getElementById("chatInput").value;
+
+      let reply = "Build projects and improve skills.";
+
+      if (input.toLowerCase().includes("job")) {
+        reply = "Focus on DSA + Resume + Projects";
+      }
+
+      document.getElementById("chatOutput").innerHTML = `
+        <p><b>You:</b> ${input}</p>
+        <p><b>AI:</b> ${reply}</p>
+      `;
     });
 
   </script>
