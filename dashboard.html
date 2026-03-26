@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Dashboard - Skill Bridge</title>
   <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -51,7 +52,7 @@
       <p>Technical: <span id="techScore">0%</span></p>
       <p>Soft Skills: <span id="softScore">0%</span></p>
       <p>Overall: <span id="overallScore">0%</span></p>
-
+<canvas id="skillChart" height="150"></canvas>
       <div class="progress-bar">
         <div id="progressFill"></div>
       </div>
@@ -113,7 +114,9 @@
 
 <!-- SCRIPT -->
 <script type="module">
-
+import { db, auth } from "./js/firebase.js";
+import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  
 // 🎯 SKILL DATA WITH WEIGHTS
 const careerSkills = {
   "AI Engineer": {
@@ -130,6 +133,26 @@ const careerSkills = {
   }
 };
 
+  let chart;
+
+function updateChart(tech, soft, overall) {
+
+  const ctx = document.getElementById("skillChart");
+
+  if (chart) chart.destroy();
+
+  chart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: ["Technical", "Soft Skills", "Overall"],
+      datasets: [{
+        label: "Score %",
+        data: [tech, soft, overall]
+      }]
+    }
+  });
+}
+  
 // 📚 COURSE DATA
 const courseData = {
   "python": "Python Bootcamp (Udemy)",
@@ -170,6 +193,19 @@ document.getElementById("analyzeBtn").addEventListener("click", () => {
   const softScore = Math.min(100, 50 + userSkills.length * 5);
   const overall = Math.round((techScore + softScore) / 2);
 
+    <button id="analyzeBtn" updateChart(techScore, softScore, overall);>Analyze Skill Gap</button>
+  const user = auth.currentUser;
+
+if (user) {
+  await setDoc(doc(db, "analysis", user.uid), {
+    skills: userSkills,
+    career: career,
+    techScore,
+    softScore,
+    overall
+  });
+}
+                                                       
   // 🎨 UPDATE UI
   document.getElementById("techScore").innerText = techScore + "%";
   document.getElementById("softScore").innerText = softScore + "%";
