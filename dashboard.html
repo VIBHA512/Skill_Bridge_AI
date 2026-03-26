@@ -13,57 +13,74 @@
   </section>
      <div class="container">
 
-    <!-- LEFT PANEL -->
-    <div class="left-panel">
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
 
-      <div class="tab-container">
-        <button class="tab active">Fresher</button>
-      </div>
-
-      <h3>Enter Your Skills</h3>
-      <input type="text" id="skillsInput" placeholder="Python, SQL, ML">
-
-      <h3>Select Target Career</h3>
-      <select id="career">
-        <option>Data Scientist</option>
-        <option>Web Developer</option>
-        <option>AI Engineer</option>
-        <option>Cybersecurity Analyst</option>
-        <option>Data Analyst</option>
-        <option>Frontend Developer</option>
-        <option>Backend Developer</option>
-        <option>Cloud Engineer</option>
-      </select>
-
-      <h3>Upload Resume</h3>
-      <input type="file" id="resumeInput">
-      <button id="uploadBtn">Extract Skills</button>
-
-      <h3>Enter Soft Skills</h3>
-      <input type="text" id="softSkills" placeholder="Communication, Leadership">
-
-      <button id="analyzeBtn">Analyze Skill Gap</button>
-      <button id="recommendBtn">Recommend Career</button>
-      <button id="progressBtn">Progress Dashboard</button>
-      <button id="suggestBtn">Suggest Careers</button>
-
+    <div class="tab-container">
+      <button class="tab active">Fresher</button>
+      <button class="tab">Experienced</button>
     </div>
 
+    <h3>Enter Your Skills</h3>
+    <input type="text" id="skillsInput" placeholder="Python, SQL, ML">
 
-     <div class="right-panel">
+    <h3>Select Target Career</h3>
+    <select id="career">
+      <option>AI Engineer</option>
+      <option>Web Developer</option>
+      <option>Data Scientist</option>
+    </select>
 
-      <div id="outputBox" class="output-box"></div>
+    <h3>Upload Resume</h3>
+    <input type="file" id="resumeInput">
+    <button id="uploadBtn">Extract Skills</button>
 
-      <div class="chat-box">
-        <input type="text" id="chatInput" placeholder="Ask about skills, careers...">
-        <button id="chatBtn">Send</button>
-      </div>
+    <h3>Enter Soft Skills</h3>
+    <input type="text" id="softSkills" placeholder="Communication, Leadership">
 
-      <div id="chatOutput"></div>
+    <button id="analyzeBtn">Analyze Skill Gap</button>
+    <button id="recommendBtn">Recommend Career</button>
 
+  </div>
+
+  <!-- MIDDLE PANEL (MAIN RESULT) -->
+  <div class="middle-panel">
+
+    <h2>🎯 AI Engineer Skill Analysis</h2>
+
+    <p>📊 <b>Technical Score:</b> <span id="techScore">0%</span></p>
+    <p>🧠 <b>Soft Skills Score:</b> <span id="softScore">0%</span></p>
+    <p>🎯 <b>Overall Score:</b> <span id="overallScore">0%</span></p>
+
+    <h3>✅ Your Skills</h3>
+    <p id="yourSkills"></p>
+
+    <h3>📌 Missing Skills</h3>
+    <p id="missingSkills" style="color:red;"></p>
+
+    <h3>📚 Recommended Courses</h3>
+    <ul id="courses"></ul>
+
+    <h3>🗺 Personalized Roadmap</h3>
+    <ol id="roadmap"></ol>
+
+  </div>
+
+  <!-- RIGHT PANEL (CHATBOT) -->
+  <div class="right-panel">
+
+    <h2>AI Career Chatbot</h2>
+
+    <div class="chat-display" id="chatOutput"></div>
+
+    <div class="chat-box">
+      <input type="text" id="chatInput" placeholder="Ask about skills, careers...">
+      <button id="chatBtn">Send</button>
     </div>
 
   </div>
+
+</div>
 
   <!-- SCRIPT -->
   <script type="module">
