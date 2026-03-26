@@ -11,7 +11,7 @@
 <!-- HERO -->
 <section class="hero">
   <h2>SkillBridge AI 🚀</h2>
-  <p>Your AI-powered career companion for all domains</p>
+  <p>Your AI-powered career companion</p>
 </section>
 
 <div class="container">
@@ -19,20 +19,16 @@
   <!-- LEFT PANEL -->
   <div class="left-panel">
 
-    <h3>Select Domain</h3>
-    <select id="domain">
-      <option>Technology</option>
-      <option>Business</option>
-      <option>Creative</option>
-      <option>Science</option>
-      <option>Healthcare</option>
-    </select>
+    <h3>Enter Skills</h3>
+    <input type="text" id="skillsInput" placeholder="Python, HTML, ML">
 
     <h3>Select Career</h3>
-    <select id="career"></select>
-
-    <h3>Enter Skills</h3>
-    <input type="text" id="skillsInput" placeholder="Python, Excel, Creativity">
+    <select id="career">
+      <option>AI Engineer</option>
+      <option>Web Developer</option>
+      <option>Data Scientist</option>
+      <option>Cybersecurity Analyst</option>
+    </select>
 
     <h3>Upload Resume</h3>
     <input type="file" id="resumeInput">
@@ -49,10 +45,11 @@
   <!-- MIDDLE PANEL -->
   <div class="middle-panel">
 
+    <!-- SCORE CARD -->
     <div class="result-card">
       <h3>📊 Scores</h3>
       <p>Technical: <span id="techScore">0%</span></p>
-      <p>Soft: <span id="softScore">0%</span></p>
+      <p>Soft Skills: <span id="softScore">0%</span></p>
       <p>Overall: <span id="overallScore">0%</span></p>
 
       <div class="progress-bar">
@@ -60,34 +57,40 @@
       </div>
     </div>
 
+    <!-- CAREER -->
     <div class="result-card">
-      <h3>🎯 Recommendation</h3>
+      <h3>🎯 Recommended Career</h3>
       <p id="careerResult">--</p>
     </div>
 
+    <!-- SKILLS -->
     <div class="result-card">
       <h3>✅ Your Skills</h3>
       <p id="yourSkills"></p>
     </div>
 
+    <!-- MISSING -->
     <div class="result-card">
       <h3>📌 Missing Skills</h3>
       <p id="missingSkills"></p>
     </div>
 
+    <!-- COURSES -->
     <div class="result-card">
       <h3>📚 Courses</h3>
       <ul id="courses"></ul>
     </div>
 
+    <!-- ROADMAP -->
     <div class="result-card">
       <h3>🗺 Roadmap</h3>
       <ol id="roadmap"></ol>
     </div>
 
+    <!-- TRENDING -->
     <div class="result-card">
       <h3>🔥 Trending Skills</h3>
-      <p>AI, Marketing, Finance, Design, Healthcare</p>
+      <p>AI, Cloud, Cybersecurity, Data Science</p>
     </div>
 
   </div>
@@ -111,74 +114,45 @@
 <!-- SCRIPT -->
 <script type="module">
 
-// 🌍 DOMAIN CAREERS
-const domainCareers = {
-  "Technology": ["Web Developer", "AI Engineer", "Data Scientist"],
-  "Business": ["Marketing Manager", "Financial Analyst", "Entrepreneur"],
-  "Creative": ["Graphic Designer", "Content Creator", "UI/UX Designer"],
-  "Science": ["Researcher", "Biotechnologist", "Lab Analyst"],
-  "Healthcare": ["Doctor", "Nurse", "Pharmacist"]
-};
-
-// 🧠 SKILLS DATA
+// 🎯 SKILL DATA
 const careerSkills = {
-  "Web Developer": ["html", "css", "javascript"],
-  "AI Engineer": ["python", "machine learning"],
-  "Data Scientist": ["python", "sql"],
-  "Marketing Manager": ["communication", "seo"],
-  "Financial Analyst": ["excel", "finance"],
-  "Graphic Designer": ["design", "creativity"],
-  "Content Creator": ["writing", "social media"],
-  "Doctor": ["biology"],
+  "AI Engineer": ["python", "machine learning", "deep learning", "nlp"],
+  "Web Developer": ["html", "css", "javascript", "react"],
+  "Data Scientist": ["python", "sql", "statistics"],
+  "Cybersecurity Analyst": ["networking", "linux", "security"]
 };
 
-// 📚 COURSES
+// 📚 COURSE DATA
 const courseData = {
-  "python": "Python Course",
-  "html": "HTML Course",
-  "css": "CSS Course",
-  "javascript": "JavaScript Course",
-  "excel": "Excel Course",
-  "design": "Design Course",
-  "seo": "SEO Course"
+  "python": "Python Course - Coursera",
+  "machine learning": "ML by Andrew Ng",
+  "html": "HTML - freeCodeCamp",
+  "css": "CSS - freeCodeCamp",
+  "javascript": "JS - freeCodeCamp",
+  "react": "React - Udemy",
+  "sql": "SQL Course",
+  "networking": "Networking Basics"
 };
-
-// 🔁 LOAD CAREERS
-function loadCareers(domain) {
-  const careerSelect = document.getElementById("career");
-  careerSelect.innerHTML = "";
-
-  domainCareers[domain].forEach(c => {
-    careerSelect.innerHTML += `<option>${c}</option>`;
-  });
-}
-
-// INIT
-loadCareers("Technology");
-
-// CHANGE DOMAIN
-document.getElementById("domain").addEventListener("change", (e) => {
-  loadCareers(e.target.value);
-});
 
 // 🎯 ANALYZE
 document.getElementById("analyzeBtn").addEventListener("click", () => {
 
-  const skills = document.getElementById("skillsInput").value.toLowerCase().split(",");
+  const skillsInput = document.getElementById("skillsInput").value.toLowerCase();
   const career = document.getElementById("career").value;
 
-  const required = careerSkills[career] || [];
-  const userSkills = skills.map(s => s.trim());
+  const userSkills = skillsInput.split(",").map(s => s.trim());
+  const required = careerSkills[career];
 
-  const matched = required.filter(s => userSkills.includes(s));
-  const missing = required.filter(s => !userSkills.includes(s));
+  const matched = required.filter(skill => userSkills.includes(skill));
+  const missing = required.filter(skill => !userSkills.includes(skill));
 
-  const tech = Math.floor((matched.length / (required.length || 1)) * 100);
-  const soft = Math.floor(Math.random() * 40 + 60);
-  const overall = Math.floor((tech + soft) / 2);
+  const techScore = Math.floor((matched.length / required.length) * 100);
+  const softScore = Math.floor(Math.random() * 50 + 50);
+  const overall = Math.floor((techScore + softScore) / 2);
 
-  document.getElementById("techScore").innerText = tech + "%";
-  document.getElementById("softScore").innerText = soft + "%";
+  // UI UPDATE
+  document.getElementById("techScore").innerText = techScore + "%";
+  document.getElementById("softScore").innerText = softScore + "%";
   document.getElementById("overallScore").innerText = overall + "%";
 
   document.getElementById("progressFill").style.width = overall + "%";
@@ -198,8 +172,8 @@ document.getElementById("analyzeBtn").addEventListener("click", () => {
   // ROADMAP
   const roadmap = document.getElementById("roadmap");
   roadmap.innerHTML = "";
-  missing.forEach((s, i) => {
-    roadmap.innerHTML += `<li>Week ${i+1}: Learn ${s}</li>`;
+  missing.forEach((skill, i) => {
+    roadmap.innerHTML += `<li>Week ${i+1}: Learn ${skill}</li>`;
   });
 
 });
@@ -209,33 +183,37 @@ document.getElementById("recommendBtn").addEventListener("click", () => {
 
   const skills = document.getElementById("skillsInput").value.toLowerCase();
 
-  let result = "Explore multiple fields 🚀";
+  let career = "Web Developer 💻";
 
-  if (skills.includes("design")) result = "Creative Field 🎨";
-  if (skills.includes("finance") || skills.includes("excel")) result = "Business Field 💼";
-  if (skills.includes("python")) result = "Technology Field 💻";
-  if (skills.includes("biology")) result = "Healthcare 🏥";
+  if (skills.includes("python")) career = "Data Scientist 📊";
+  if (skills.includes("ml")) career = "AI Engineer 🤖";
+  if (skills.includes("html")) career = "Frontend Developer 🎨";
 
-  document.getElementById("careerResult").innerText = result;
+  document.getElementById("careerResult").innerText = career;
 
 });
 
 // 📄 RESUME
 document.getElementById("uploadBtn").addEventListener("click", () => {
-  alert("Resume analyzed (demo) ✅");
+  const file = document.getElementById("resumeInput").files[0];
+
+  if (!file) {
+    alert("Upload resume first");
+    return;
+  }
+
+  alert("Resume analyzed successfully ✅");
 });
 
 // 🤖 CHATBOT
 document.getElementById("chatBtn").addEventListener("click", () => {
 
-  const input = document.getElementById("chatInput").value.toLowerCase();
+  const input = document.getElementById("chatInput").value;
+  let reply = "Hey, I can guide you 🚀";
 
-  let reply = "I can guide you 🚀";
-
-  if (input.includes("career")) reply = "Explore Technology, Business, or Creative fields!";
-  if (input.includes("python")) reply = "Go for AI or Data roles";
-  if (input.includes("design")) reply = "Creative careers are great for you!";
-  if (input.includes("finance")) reply = "You can explore Business roles";
+  if (input.includes("career")) reply = "Try Data Science or Web Dev!";
+  if (input.includes("python")) reply = "Go for AI / Data roles";
+  if (input.includes("web")) reply = "Frontend or Full Stack is best";
 
   document.getElementById("chatOutput").innerHTML += `
     <p><b>You:</b> ${input}</p>
