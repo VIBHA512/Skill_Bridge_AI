@@ -186,3 +186,28 @@ ul, ol {
   margin-bottom: 15px;
   border: 1px solid #1e293b;
 }
+/* PROGRESS BAR */
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  background: #1e293b;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+#progressFill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #22c55e, #06b6d4);
+  border-radius: 10px;
+  transition: 0.5s;
+}
+
+/* RESULT CARDS */
+.result-card {
+  background: #020617;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 12px;
+  border: 1px solid #1e293b;
+}
