@@ -8,141 +8,110 @@
 
 <body>
 
-  <!-- HEADER -->
-  <header>
-    <h1>Skill Bridge</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="#" id="logoutBtn">Logout</a>
-    </nav>
-  </header>
+  <div class="container">
 
-  <!-- HERO -->
-  <section class="hero">
-    <h2 id="welcomeText">SkillBridge AI </h2>
-    <p id="roleText">Your AI-powered career companion for skill gap analysis resume insight and professional growth</p>
-  </section>
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
 
-  <!-- DASHBOARD GRID -->
-  <div class="grid">
+      <h2>Enter Your Skills</h2>
+      <input type="text" id="skillsInput" placeholder="Python, SQL, ML">
 
-    <!-- SKILL ANALYSIS -->
-    <div class="card">
-      <h3>🎯 Skill Analysis</h3>
-      <input type="text" id="skillsInput" placeholder="HTML, CSS, JS">
-      <button id="analyzeBtn">Analyze</button>
-      <div id="resultSection"></div>
-    </div>
+      <h2>Select Target Career</h2>
+      <select id="career">
+        <option>Data Scientist</option>
+        <option>Web Developer</option>
+        <option>AI Engineer</option>
+      </select>
 
-    <!-- RESUME -->
-    <div class="card">
-      <h3>📄 Resume Upload</h3>
+      <h2>Upload Resume</h2>
       <input type="file" id="resumeInput">
-      <button onclick="uploadResume()">Upload</button>
+      <button id="uploadBtn">Extract Skills</button>
+
+      <h2>Enter Soft Skills</h2>
+      <input type="text" id="softSkills" placeholder="Communication, Leadership">
+
+      <button id="analyzeBtn">Analyze Skill Gap</button>
+      <button id="recommendBtn">Recommend Career</button>
+      <button id="progressBtn">Progress Dashboard</button>
+      <button id="suggestBtn">Suggest Careers</button>
+
     </div>
 
-    <!-- SCORE -->
-    <div class="card">
-      <h3>📊 Skill Match Score</h3>
-      <h2 id="score">0%</h2>
-    </div>
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
 
-    <!-- CHAT -->
-    <div class="card">
-      <h3>🤖 AI Chat</h3>
-      <input type="text" id="chatInput" placeholder="Ask career question">
-      <button onclick="chat()">Send</button>
+      <div class="output-box" id="outputBox">
+        <!-- Results will come here -->
+      </div>
+
+      <div class="chat-box">
+        <input type="text" id="chatInput" placeholder="Ask about skills, careers...">
+        <button id="chatBtn">Send</button>
+      </div>
+
       <div id="chatOutput"></div>
+
     </div>
 
   </div>
 
-  <!-- ROLE BASED FEATURES -->
-  <section class="features" id="featuresSection"></section>
+  <!-- SCRIPT -->
   <script type="module">
 
-  import { auth, db } from "./js/firebase.js";
-  import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    // 🎯 ANALYZE
+    document.getElementById("analyzeBtn").addEventListener("click", () => {
+      const skills = document.getElementById("skillsInput").value;
 
-  // ✅ AUTH CHECK
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-      window.location.href = "login.html";
-      return;
-    }
+      document.getElementById("outputBox").innerHTML =
+        `<h3>Skill Gap Analysis</h3><p>Improve ${skills} with advanced topics 🚀</p>`;
+    });
 
-    const docRef = doc(db, "users", user.uid);
-    const userData = await getDoc(docRef);
+    // 📄 RESUME
+    document.getElementById("uploadBtn").addEventListener("click", () => {
+      const file = document.getElementById("resumeInput").files[0];
 
-    const role = userData.data().role;
+      if (!file) {
+        alert("Upload resume first");
+        return;
+      }
 
-    if (role === "fresher") {
-      document.getElementById("welcomeText").innerText = "Welcome Fresher 🎓";
-    } else {
-      document.getElementById("welcomeText").innerText = "Welcome Experienced 💼";
-    }
-  });
+      document.getElementById("outputBox").innerHTML =
+        `<h3>Resume Analysis</h3><p>Skills extracted successfully ✅</p>`;
+    });
 
-  // 🔐 LOGOUT
-  document.getElementById("logoutBtn").addEventListener("click", async () => {
-    await signOut(auth);
-    window.location.href = "login.html";
-  });
+    // 🤖 CHAT
+    document.getElementById("chatBtn").addEventListener("click", () => {
+      const input = document.getElementById("chatInput").value;
 
-  // 🎯 SKILL ANALYSIS
-  document.getElementById("analyzeBtn").addEventListener("click", () => {
-    const skills = document.getElementById("skillsInput").value.toLowerCase();
+      let reply = "Focus on improving your skills.";
 
-    let result = "Try adding more skills.";
+      if (input.toLowerCase().includes("career")) {
+        reply = "Try Data Science or Web Dev 🚀";
+      }
 
-    if (skills.includes("html") && skills.includes("css")) {
-      result = "Frontend Developer 🚀";
-    } else if (skills.includes("python")) {
-      result = "AI / Data Science 🤖";
-    }
+      document.getElementById("chatOutput").innerHTML += `
+        <p><b>You:</b> ${input}</p>
+        <p><b>AI:</b> ${reply}</p>
+      `;
+    });
 
-    document.getElementById("resultSection").innerHTML = `<h3>${result}</h3>`;
-  });
+    // 💡 RECOMMEND
+    document.getElementById("recommendBtn").addEventListener("click", () => {
+      document.getElementById("outputBox").innerHTML =
+        `<h3>Recommended Career</h3><p>Data Scientist 📊</p>`;
+    });
 
-  // 📄 RESUME
-  document.getElementById("uploadBtn").addEventListener("click", () => {
-    const file = document.getElementById("resumeInput").files[0];
+    document.getElementById("progressBtn").addEventListener("click", () => {
+      document.getElementById("outputBox").innerHTML =
+        `<h3>Progress</h3><p>You are 65% ready 🚀</p>`;
+    });
 
-    if (!file) {
-      alert("Upload file first");
-      return;
-    }
+    document.getElementById("suggestBtn").addEventListener("click", () => {
+      document.getElementById("outputBox").innerHTML =
+        `<h3>Suggestions</h3><p>AI Engineer, Backend Dev</p>`;
+    });
 
-    alert("Resume uploaded (demo)");
-  });
-
-  // 🤖 CHAT
-  document.getElementById("chatBtn").addEventListener("click", () => {
-    const input = document.getElementById("chatInput").value;
-
-    let reply = "Improve your skills and build projects.";
-
-    if (input.toLowerCase().includes("job")) {
-      reply = "Focus on DSA + Resume + Projects";
-    }
-
-    document.getElementById("chatOutput").innerHTML = `
-      <p><b>You:</b> ${input}</p>
-      <p><b>AI:</b> ${reply}</p>
-    `;
-  });
-
-  // 📊 SCORE
-  const score = Math.floor(Math.random() * 100);
-  document.getElementById("score").innerText = score + "%";
-
-</script>
-
-  <!-- FOOTER -->
-  <footer>
-    <p>© 2026 Skill Bridge | Built by Vibha</p>
-  </footer>
+  </script>
 
 </body>
 </html>
