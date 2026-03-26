@@ -5,6 +5,7 @@
   <title>Dashboard - Skill Bridge</title>
   <link rel="stylesheet" href="css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 </head>
 
 <body>
@@ -262,46 +263,89 @@ document.getElementById("recommendBtn").addEventListener("click", () => {
 });
 
 // 📄 RESUME (SMARTER FEEL)
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-document.getElementById("uploadBtn").addEventListener("click", () => {
+document.getElementById("uploadBtn").addEventListener("click", async () => {
 
   const file = document.getElementById("resumeInput").files[0];
 
   if (!file) {
-    alert("Upload resume first");
+    alert("Upload resume first 😭");
     return;
   }
 
+  // 🔥 UI loading
+  document.getElementById("yourSkills").innerText = "Extracting skills... ⏳";
+
   const reader = new FileReader();
 
-  reader.onload = function(e) {
-    const text = e.target.result.toLowerCase();
+  reader.onload = async function () {
 
-    // 🔥 detect skills
-    const skillsList = [
-      "python", "java", "html", "css", "javascript",
-      "react", "node.js", "sql", "machine learning",
-      "deep learning", "nlp", "tensorflow", "excel"
+    const typedArray = new Uint8Array(this.result);
+
+    const pdf = await pdfjsLib.getDocument(typedArray).promise;
+
+    let fullText = "";
+
+    // 🔥 Extract ALL pages text
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+
+      const pageText = content.items.map(item => item.str).join(" ");
+      fullText += pageText + " ";
+    }
+
+    fullText = fullText.toLowerCase();
+
+    // 🧠 SMART SKILL DATABASE
+    const skillsDB = [
+      "python","java","c++","html","css","javascript","react","node.js",
+      "sql","mongodb","machine learning","deep learning","nlp","tensorflow",
+      "excel","power bi","data analysis","aws","cloud computing",
+      "linux","networking","cybersecurity","git","github"
     ];
+
+    const synonyms = {
+      "ml": "machine learning",
+      "ai": "machine learning",
+      "js": "javascript",
+      "reactjs": "react",
+      "node": "node.js"
+    };
 
     let foundSkills = [];
 
-    skillsList.forEach(skill => {
-      if (text.includes(skill)) {
+    skillsDB.forEach(skill => {
+      if (fullText.includes(skill)) {
         foundSkills.push(skill);
       }
     });
 
+    // 🔁 synonym match
+    Object.keys(synonyms).forEach(key => {
+      if (fullText.includes(key)) {
+        foundSkills.push(synonyms[key]);
+      }
+    });
+
+    // ❌ remove duplicates
+    foundSkills = [...new Set(foundSkills)];
+
+    // 🎯 UPDATE UI
     if (foundSkills.length === 0) {
       document.getElementById("yourSkills").innerText =
-        "No skills detected 😅 Try a better resume";
+        "No skills detected 😅";
     } else {
       document.getElementById("yourSkills").innerText =
         "Extracted: " + foundSkills.join(", ");
+
+      // 🔥 AUTO-FILL INPUT
+      document.getElementById("skillsInput").value =
+        foundSkills.join(", ");
     }
+
   };
 
-  reader.readAsText(file);
+  reader.readAsArrayBuffer(file);
 });
 
 // 🤖 ADVANCED CHATBOT
