@@ -271,9 +271,36 @@ document.getElementById("uploadBtn").addEventListener("click", () => {
     return;
   }
 
-  document.getElementById("yourSkills").innerText =
-    "Extracted: Python, SQL, Machine Learning (Demo)";
+  const reader = new FileReader();
 
+  reader.onload = function(e) {
+    const text = e.target.result.toLowerCase();
+
+    // 🔥 detect skills
+    const skillsList = [
+      "python", "java", "html", "css", "javascript",
+      "react", "node.js", "sql", "machine learning",
+      "deep learning", "nlp", "tensorflow", "excel"
+    ];
+
+    let foundSkills = [];
+
+    skillsList.forEach(skill => {
+      if (text.includes(skill)) {
+        foundSkills.push(skill);
+      }
+    });
+
+    if (foundSkills.length === 0) {
+      document.getElementById("yourSkills").innerText =
+        "No skills detected 😅 Try a better resume";
+    } else {
+      document.getElementById("yourSkills").innerText =
+        "Extracted: " + foundSkills.join(", ");
+    }
+  };
+
+  reader.readAsText(file);
 });
 
 // 🤖 ADVANCED CHATBOT
