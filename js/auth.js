@@ -68,3 +68,46 @@ if (!userData.exists()) {
     alert(error.message);
   }
 }
+document.getElementById("analyzeBtn").addEventListener("click", () => {
+  const skills = document.getElementById("skillsInput").value.toLowerCase();
+
+  let result = "";
+
+  if (skills.includes("html") && skills.includes("css")) {
+    result = "You are on track for Frontend Developer 🚀";
+  } else if (skills.includes("python")) {
+    result = "You can explore AI / Data Science 🤖";
+  } else {
+    result = "Try adding more skills to get better suggestions.";
+  }
+
+  document.getElementById("resultSection").innerHTML = `
+    <h3>${result}</h3>
+  `;
+});
+window.uploadResume = function () {
+  const file = document.getElementById("resumeInput").files[0];
+
+  if (!file) {
+    alert("Please upload a file");
+    return;
+  }
+
+  alert("Resume uploaded successfully (demo)");
+};
+const score = Math.floor(Math.random() * 100);
+document.getElementById("score").innerText = score + "%";
+window.chat = function () {
+  const input = document.getElementById("chatInput").value;
+
+  let reply = "Try improving your skills and build projects.";
+
+  if (input.toLowerCase().includes("job")) {
+    reply = "Focus on DSA + Projects + Resume";
+  }
+
+  document.getElementById("chatOutput").innerHTML = `
+    <p><b>You:</b> ${input}</p>
+    <p><b>AI:</b> ${reply}</p>
+  `;
+};
