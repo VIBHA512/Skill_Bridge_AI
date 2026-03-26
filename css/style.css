@@ -324,3 +324,110 @@ body {
   margin-top: 15px;
   color: #94a3b8;
 }
+/* MAIN LAYOUT */
+.container {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+}
+
+/* LEFT PANEL */
+.left-panel {
+  width: 30%;
+  background: #020617;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #1e293b;
+}
+
+/* RIGHT PANEL */
+.right-panel {
+  width: 70%;
+}
+
+/* INPUTS */
+.left-panel input,
+.left-panel select {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0 15px;
+  border-radius: 8px;
+  border: none;
+  background: #1e293b;
+  color: white;
+}
+
+/* BUTTONS */
+.left-panel button {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(90deg, #22c1c3, #3a7bd5);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.left-panel button:hover {
+  opacity: 0.9;
+}
+
+/* OUTPUT BOX */
+.output-box {
+  height: 220px;
+  background: #020617;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 20px;
+  border: 1px solid #1e293b;
+}
+
+/* CHAT */
+.chat-box {
+  display: flex;
+  gap: 10px;
+}
+
+.chat-box input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: #1e293b;
+  color: white;
+}
+
+.chat-box button {
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: none;
+  background: #38bdf8;
+  cursor: pointer;
+}
+
+/* CHAT OUTPUT */
+#chatOutput {
+  margin-top: 15px;
+  color: #94a3b8;
+}
+
+/* TAB */
+.tab-container {
+  margin-bottom: 15px;
+}
+
+.tab {
+  padding: 8px 15px;
+  border-radius: 20px;
+  border: none;
+  background: #1e293b;
+  color: white;
+}
+
+.tab.active {
+  background: #38bdf8;
+  color: black;
+}
+
