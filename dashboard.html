@@ -349,36 +349,58 @@ document.getElementById("uploadBtn").addEventListener("click", async () => {
 });
 
 // 🤖 ADVANCED CHATBOT
+function typeEffect(text, element) {
+  let i = 0;
+  element.innerHTML = "";
+
+  let interval = setInterval(() => {
+    element.innerHTML += text.charAt(i);
+    i++;
+    if (i >= text.length) clearInterval(interval);
+  }, 20);
+}
+
 document.getElementById("chatBtn").addEventListener("click", () => {
 
-  const input = document.getElementById("chatInput").value.toLowerCase();
+  const inputBox = document.getElementById("chatInput");
+  const input = inputBox.value.toLowerCase();
+  const chat = document.getElementById("chatOutput");
 
-  let reply = "I can guide you in your career 🚀";
+  chat.innerHTML += `<p><b>You:</b> ${input}</p>`;
+  inputBox.value = "";
 
-  if (input.includes("career")) {
-    reply = "Tell me your skills, I’ll suggest best career 👀";
-  }
-  else if (input.includes("python")) {
-    reply = "Python opens AI, Data Science & Backend roles 🔥";
-  }
-  else if (input.includes("web")) {
-    reply = "Focus on HTML, CSS, JS + React for frontend 🚀";
-  }
-  else if (input.includes("ai")) {
-    reply = "Start with Python → ML → Deep Learning → Projects 🤖";
-  }
-  else if (input.includes("job")) {
-    reply = "Build projects + strong resume + practice interviews 💼";
-  }
+  // 🤖 Thinking effect
+  const thinkingMsg = document.createElement("p");
+  thinkingMsg.innerHTML = "<b>AI:</b> 🤖 Thinking...";
+  chat.appendChild(thinkingMsg);
 
-  document.getElementById("chatOutput").innerHTML += `
-    <p><b>You:</b> ${input}</p>
-    <p><b>AI:</b> ${reply}</p>
-  `;
+  setTimeout(() => {
+
+    let reply = "Hey, I can guide you in your career 🚀";
+
+    if (input.includes("career")) {
+      reply = "Based on your interest, I recommend exploring high-growth domains like AI, Web Development, or Data Science 📈";
+    }
+    else if (input.includes("python")) {
+      reply = "Python is powerful! You can go into AI, Data Science, or Backend Development 🔥";
+    }
+    else if (input.includes("web")) {
+      reply = "Start with HTML, CSS, JS → then move to React & Node.js 🚀";
+    }
+    else if (input.includes("ai")) {
+      reply = "Roadmap: Python → Machine Learning → Deep Learning → Projects 🤖";
+    }
+    else if (input.includes("job")) {
+      reply = "Focus on projects + resume + internships + DSA practice 💼";
+    }
+
+    // 🎯 Replace thinking with typing effect
+    thinkingMsg.innerHTML = "<b>AI:</b> ";
+    typeEffect(reply, thinkingMsg);
+
+  }, 1200);
 
 });
-
-</script>
 </script>
 
 </body>
