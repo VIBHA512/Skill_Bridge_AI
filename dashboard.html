@@ -114,118 +114,118 @@
 <!-- SCRIPT -->
 <script type="module">
 
-// 🎯 SKILL DATA
+// 🎯 SKILL DATA WITH WEIGHTS
 const careerSkills = {
-  "AI Engineer": ["python", "machine learning", "deep learning", "nlp","tensorflow"],
-  "Web Developer": ["html", "css", "javascript", "react","node.js"],
-  "Cybersecurity Analyst": ["networking", "linux", "security analysis","ethical hacking", "cryptography"],
-   "Data Scientist": ["python","machine learning","statistics","sql","data visualization"],
-  "Data Analyst": [ "python","sql","data visualization","excel"],
-  "Frontend Developer":["html", "css", "javascript", "react"],
-  "Backend Developer": [ "node.js","python","database","api"],
-  "Cloud Engineer": ["cloud computing","aws","linux","networking"]
-
+  "AI Engineer": {
+    skills: ["python", "machine learning", "deep learning", "nlp", "tensorflow"],
+  },
+  "Web Developer": {
+    skills: ["html", "css", "javascript", "react", "node.js"],
+  },
+  "Data Scientist": {
+    skills: ["python", "sql", "statistics", "machine learning"],
+  },
+  "Cybersecurity Analyst": {
+    skills: ["networking", "linux", "ethical hacking", "security"],
+  }
 };
 
 // 📚 COURSE DATA
-  const courseData = {
-
-  "python":[
-    "Python for Everybody - Coursera",
-    "Complete Python Bootcamp - Udemy"],
-
-  "machine learning":[
-    "Machine Learning by Andrew Ng - Coursera" ],
-
-  "sql":[
-    "SQL for Data Science - Coursera" ],
-
-  "html":[
-    "HTML & CSS - freeCodeCamp" ],
-
-  "css":[
-    "Responsive Design - freeCodeCamp"],
-
-  "javascript":[
-    "JavaScript Algorithms - freeCodeCamp"],
-
-  "react":[
-    "React Course - Udemy"],
-
-  "node.js":[
-    "Node.js Guide - Udemy"],
-
-  "excel":[
-    "Excel for Data Analysis" ],
-  "aws":[
-    "AWS Cloud Essentials" ],
-
-  "cloud computing":[
-    "Intro to Cloud Computing"]
-
+const courseData = {
+  "python": "Python Bootcamp (Udemy)",
+  "machine learning": "ML by Andrew Ng",
+  "deep learning": "Deep Learning Specialization",
+  "sql": "SQL for Data Science",
+  "html": "HTML - freeCodeCamp",
+  "css": "CSS - freeCodeCamp",
+  "javascript": "JavaScript - freeCodeCamp",
+  "react": "React Course",
+  "node.js": "Node.js Guide",
+  "networking": "Networking Basics",
+  "linux": "Linux Fundamentals"
 };
 
-// 🎯 ANALYZE
+// 🧠 NORMALIZE SKILLS
+function cleanSkills(input) {
+  return input.toLowerCase().split(",").map(s => s.trim());
+}
+
+// 🎯 ANALYZE (SMART)
 document.getElementById("analyzeBtn").addEventListener("click", () => {
 
-  const skillsInput = document.getElementById("skillsInput").value.toLowerCase();
+  const userSkills = cleanSkills(document.getElementById("skillsInput").value);
   const career = document.getElementById("career").value;
 
-  const userSkills = skillsInput.split(",").map(s => s.trim());
-  const required = careerSkills[career];
+  const required = careerSkills[career].skills;
 
-  const matched = required.filter(skill => userSkills.includes(skill));
-  const missing = required.filter(skill => !userSkills.includes(skill));
+  let matched = [];
+  let missing = [];
 
-  const techScore = Math.floor((matched.length / required.length) * 100);
-  const softScore = Math.floor(Math.random() * 50 + 50);
-  const overall = Math.floor((techScore + softScore) / 2);
+  required.forEach(skill => {
+    if (userSkills.includes(skill)) matched.push(skill);
+    else missing.push(skill);
+  });
 
-  // UI UPDATE
+  const techScore = Math.round((matched.length / required.length) * 100);
+  const softScore = Math.min(100, 50 + userSkills.length * 5);
+  const overall = Math.round((techScore + softScore) / 2);
+
+  // 🎨 UPDATE UI
   document.getElementById("techScore").innerText = techScore + "%";
   document.getElementById("softScore").innerText = softScore + "%";
   document.getElementById("overallScore").innerText = overall + "%";
-
   document.getElementById("progressFill").style.width = overall + "%";
 
-  document.getElementById("yourSkills").innerText = userSkills.join(", ");
-  document.getElementById("missingSkills").innerText = missing.join(", ");
+  document.getElementById("yourSkills").innerText = matched.join(", ") || "None";
+  document.getElementById("missingSkills").innerText = missing.join(", ") || "None";
 
-  // COURSES
+  // 📚 COURSES
   const courseList = document.getElementById("courses");
   courseList.innerHTML = "";
+
   missing.forEach(skill => {
     if (courseData[skill]) {
       courseList.innerHTML += `<li>${courseData[skill]}</li>`;
     }
   });
 
-  // ROADMAP
+  // 🗺 ROADMAP
   const roadmap = document.getElementById("roadmap");
   roadmap.innerHTML = "";
+
   missing.forEach((skill, i) => {
-    roadmap.innerHTML += `<li>Week ${i+1}: Learn ${skill}</li>`;
+    roadmap.innerHTML += `<li>Week ${i+1}: Master ${skill}</li>`;
   });
 
 });
 
-// 💡 RECOMMEND
+// 💡 SMART CAREER RECOMMENDER
 document.getElementById("recommendBtn").addEventListener("click", () => {
 
-  const skills = document.getElementById("skillsInput").value.toLowerCase();
+  const userSkills = cleanSkills(document.getElementById("skillsInput").value);
 
-  let career = "Web Developer 💻";
+  let bestMatch = "";
+  let bestScore = 0;
 
-  if (skills.includes("python")) career = "Data Scientist 📊";
-  if (skills.includes("ml")) career = "AI Engineer 🤖";
-  if (skills.includes("html")) career = "Frontend Developer 🎨";
+  for (let career in careerSkills) {
+    let required = careerSkills[career].skills;
+    let matchCount = required.filter(skill => userSkills.includes(skill)).length;
+    let score = matchCount / required.length;
 
-  document.getElementById("careerResult").innerText = career;
+    if (score > bestScore) {
+      bestScore = score;
+      bestMatch = career;
+    }
+  }
+
+  document.getElementById("careerResult").innerText =
+    bestMatch ? bestMatch + " 🚀" : "Add more skills 😅";
 
 });
 
-// 📄 RESUME
+// 📄 RESUME (SMARTER FEEL)
 document.getElementById("uploadBtn").addEventListener("click", () => {
+
   const file = document.getElementById("resumeInput").files[0];
 
   if (!file) {
@@ -233,18 +233,33 @@ document.getElementById("uploadBtn").addEventListener("click", () => {
     return;
   }
 
-  alert("Resume analyzed successfully ✅");
+  document.getElementById("yourSkills").innerText =
+    "Extracted: Python, SQL, Machine Learning (Demo)";
+
 });
 
-// 🤖 CHATBOT
+// 🤖 ADVANCED CHATBOT
 document.getElementById("chatBtn").addEventListener("click", () => {
 
-  const input = document.getElementById("chatInput").value;
-  let reply = "Hey, I can guide you 🚀";
+  const input = document.getElementById("chatInput").value.toLowerCase();
 
-  if (input.includes("career")) reply = "Try Data Science or Web Dev!";
-  if (input.includes("python")) reply = "Go for AI / Data roles";
-  if (input.includes("web")) reply = "Frontend or Full Stack is best";
+  let reply = "I can guide you in your career 🚀";
+
+  if (input.includes("career")) {
+    reply = "Tell me your skills, I’ll suggest best career 👀";
+  }
+  else if (input.includes("python")) {
+    reply = "Python opens AI, Data Science & Backend roles 🔥";
+  }
+  else if (input.includes("web")) {
+    reply = "Focus on HTML, CSS, JS + React for frontend 🚀";
+  }
+  else if (input.includes("ai")) {
+    reply = "Start with Python → ML → Deep Learning → Projects 🤖";
+  }
+  else if (input.includes("job")) {
+    reply = "Build projects + strong resume + practice interviews 💼";
+  }
 
   document.getElementById("chatOutput").innerHTML += `
     <p><b>You:</b> ${input}</p>
@@ -253,6 +268,7 @@ document.getElementById("chatBtn").addEventListener("click", () => {
 
 });
 
+</script>
 </script>
 
 </body>
