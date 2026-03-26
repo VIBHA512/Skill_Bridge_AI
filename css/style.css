@@ -430,4 +430,71 @@ body {
   background: #38bdf8;
   color: black;
 }
+.container {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+}
+
+/* LEFT */
+.left-panel {
+  width: 25%;
+  background: #020617;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+/* MIDDLE */
+.middle-panel {
+  width: 40%;
+  background: #020617;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+/* RIGHT */
+.right-panel {
+  width: 35%;
+  background: #020617;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+/* CHAT DISPLAY */
+.chat-display {
+  height: 250px;
+  background: #000814;
+  padding: 10px;
+  border-radius: 10px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
+
+/* INPUTS */
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0 15px;
+  border-radius: 8px;
+  border: none;
+  background: #1e293b;
+  color: white;
+}
+
+/* BUTTONS */
+button {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(90deg, #22c1c3, #3a7bd5);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.9;
+}
 
