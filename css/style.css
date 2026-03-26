@@ -179,3 +179,10 @@ ul, ol {
   background: #38bdf8;
   border-radius: 10px;
 }
+.result-card {
+  background: #0b1220;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #1e293b;
+}
