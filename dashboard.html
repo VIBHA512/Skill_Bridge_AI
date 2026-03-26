@@ -12,14 +12,10 @@
     <p id="roleText">Your AI-powered career companion for skill gap analysis, redume insights and professional growth</p>
   </section>
      <div class="tab-container">
-      <div class="tab-slider" id="tabSlider"></div>
       <button class="tab active" id="fresherTab">Fresher</button>
-      
     </div>
-  <div class="container">
-
-    <!-- LEFT PANEL -->
-    <div class="left-panel">
+  
+ <div class="card">
 
       <h2>Enter Your Skills</h2>
       <input type="text" id="skillsInput" placeholder="Python, SQL, ML">
@@ -50,14 +46,11 @@
 
     </div>
 
-    <!-- RIGHT PANEL -->
-    <div class="right-panel">
+    
+         <div id="outputBox" class="output-box"></div>
 
-      <div class="output-box" id="outputBox">
-        <!-- Results will come here -->
-      </div>
-
-      <div class="chat-box">
+     
+  <div class="card">
         <input type="text" id="chatInput" placeholder="Ask about skills, careers...">
         <button id="chatBtn">Send</button>
       </div>
