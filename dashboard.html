@@ -174,7 +174,7 @@ function cleanSkills(input) {
 }
 
 // 🎯 ANALYZE (SMART)
-document.getElementById("analyzeBtn").addEventListener("click", () => {
+document.getElementById("analyzeBtn").addEventListener("click", async () => {
 
   const userSkills = cleanSkills(document.getElementById("skillsInput").value);
   const career = document.getElementById("career").value;
@@ -193,20 +193,22 @@ document.getElementById("analyzeBtn").addEventListener("click", () => {
   const softScore = Math.min(100, 50 + userSkills.length * 5);
   const overall = Math.round((techScore + softScore) / 2);
 
-    <button id="analyzeBtn" updateChart(techScore, softScore, overall);>Analyze Skill Gap</button>
-  const user = auth.currentUser;
+  // ✅ UPDATE CHART
+  updateChart(techScore, softScore, overall);
 
-if (user) {
-  await setDoc(doc(db, "analysis", user.uid), {
-    skills: userSkills,
-    career: career,
-    techScore,
-    softScore,
-    overall
-  });
-}
-                                                       
-  // 🎨 UPDATE UI
+  // ✅ FIRESTORE SAVE
+  const user = auth.currentUser;
+  if (user) {
+    await setDoc(doc(db, "analysis", user.uid), {
+      skills: userSkills,
+      career: career,
+      techScore,
+      softScore,
+      overall
+    });
+  }
+
+  // ✅ UI UPDATE
   document.getElementById("techScore").innerText = techScore + "%";
   document.getElementById("softScore").innerText = softScore + "%";
   document.getElementById("overallScore").innerText = overall + "%";
@@ -215,7 +217,7 @@ if (user) {
   document.getElementById("yourSkills").innerText = matched.join(", ") || "None";
   document.getElementById("missingSkills").innerText = missing.join(", ") || "None";
 
-  // 📚 COURSES
+  // COURSES
   const courseList = document.getElementById("courses");
   courseList.innerHTML = "";
 
@@ -225,7 +227,7 @@ if (user) {
     }
   });
 
-  // 🗺 ROADMAP
+  // ROADMAP
   const roadmap = document.getElementById("roadmap");
   roadmap.innerHTML = "";
 
