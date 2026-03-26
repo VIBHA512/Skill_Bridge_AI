@@ -11,32 +11,35 @@
     <h2 id="welcomeText">SkillBridge AI</h2>
     <p id="roleText">Your AI-powered career companion for skill gap analysis, redume insights and professional growth</p>
   </section>
-     <div class="tab-container">
-      <button class="tab active" id="fresherTab">Fresher</button>
-    </div>
-  
- <div class="card">
+     <div class="container">
 
-      <h2>Enter Your Skills</h2>
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+
+      <div class="tab-container">
+        <button class="tab active">Fresher</button>
+      </div>
+
+      <h3>Enter Your Skills</h3>
       <input type="text" id="skillsInput" placeholder="Python, SQL, ML">
 
-      <h2>Select Target Career</h2>
+      <h3>Select Target Career</h3>
       <select id="career">
         <option>Data Scientist</option>
-      <option>Web Developer</option>
-      <option>AI Engineer</option>
-      <option>Cybersecurity Analyst</option>
-      <option>Data Analyst</option>
-      <option>Frontend Developer</option>
-      <option>Backend Developer</option>
-      <option>Cloud Engineer</option>
+        <option>Web Developer</option>
+        <option>AI Engineer</option>
+        <option>Cybersecurity Analyst</option>
+        <option>Data Analyst</option>
+        <option>Frontend Developer</option>
+        <option>Backend Developer</option>
+        <option>Cloud Engineer</option>
       </select>
 
-      <h2>Upload Resume</h2>
+      <h3>Upload Resume</h3>
       <input type="file" id="resumeInput">
       <button id="uploadBtn">Extract Skills</button>
 
-      <h2>Enter Soft Skills</h2>
+      <h3>Enter Soft Skills</h3>
       <input type="text" id="softSkills" placeholder="Communication, Leadership">
 
       <button id="analyzeBtn">Analyze Skill Gap</button>
@@ -46,11 +49,12 @@
 
     </div>
 
-    
-         <div id="outputBox" class="output-box"></div>
 
-     
-  <div class="card">
+     <div class="right-panel">
+
+      <div id="outputBox" class="output-box"></div>
+
+      <div class="chat-box">
         <input type="text" id="chatInput" placeholder="Ask about skills, careers...">
         <button id="chatBtn">Send</button>
       </div>
