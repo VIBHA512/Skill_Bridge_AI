@@ -86,12 +86,35 @@
   <script type="module">
 
     // 🎯 ANALYZE
-    document.getElementById("analyzeBtn").addEventListener("click", () => {
-      const skills = document.getElementById("skillsInput").value;
+   document.getElementById("analyzeBtn").addEventListener("click", () => {
+  const skills = document.getElementById("skillsInput").value.toLowerCase().split(",");
 
-      document.getElementById("outputBox").innerHTML =
-        `<h3>Skill Gap Analysis</h3><p>Improve ${skills} with advanced topics 🚀</p>`;
-    });
+  const required = ["python", "machine learning", "deep learning", "nlp", "tensorflow"];
+
+  const matched = required.filter(skill => skills.includes(skill.trim()));
+  const missing = required.filter(skill => !skills.includes(skill.trim()));
+
+  const techScore = Math.floor((matched.length / required.length) * 100);
+  const softScore = Math.floor(Math.random() * 50 + 50);
+  const overall = Math.floor((techScore + softScore) / 2);
+
+  document.getElementById("techScore").innerText = techScore + "%";
+  document.getElementById("softScore").innerText = softScore + "%";
+  document.getElementById("overallScore").innerText = overall + "%";
+
+  document.getElementById("yourSkills").innerText = skills.join(", ");
+  document.getElementById("missingSkills").innerText = missing.join(", ");
+
+  document.getElementById("courses").innerHTML =
+    `<li>Machine Learning - Andrew Ng (Coursera)</li>`;
+
+  document.getElementById("roadmap").innerHTML = `
+    <li>Week 1-2: Learn ML basics</li>
+    <li>Week 3-4: Learn TensorFlow</li>
+    <li>Week 5-6: Deep Learning</li>
+    <li>Week 7-8: NLP</li>
+  `;
+});
 
     // 📄 RESUME
     document.getElementById("uploadBtn").addEventListener("click", () => {
@@ -108,19 +131,35 @@
 
     // 🤖 CHAT
     document.getElementById("chatBtn").addEventListener("click", () => {
-      const input = document.getElementById("chatInput").value;
+  const input = document.getElementById("chatInput").value;
 
-      let reply = "Focus on improving your skills.";
+  let reply = "Hey, I can guide you on skills and careers 🚀";
 
-      if (input.toLowerCase().includes("career")) {
-        reply = "Try Data Science or Web Dev 🚀";
-      }
+  if (input.includes("career")) {
+    reply = "AI Engineer is a great option for you!";
+  }
 
-      document.getElementById("chatOutput").innerHTML += `
-        <p><b>You:</b> ${input}</p>
-        <p><b>AI:</b> ${reply}</p>
-      `;
-    });
+  if (input.includes("python")) {
+    reply= "With Python, you can explore Data Scientist, AI Engineer, or Backend Developer roles.";
+  }
+
+  if (input.includes("web")) {
+    reply ="You can go for Frontend, Backend, or Full Stack roles. Focus on JavaScript + frameworks.";
+  }
+
+  if (input.includes("ai") || input.includes("machine learning")) {
+    reply="Focus on Python, ML, Deep Learning, and real-world projects to become an AI Engineer.";
+  }
+
+  if (input.includes("cyber")) {
+    reply="Cybersecurity needs Networking, Linux, and Ethical Hacking. Start with basics + labs.";
+  }
+
+  document.getElementById("chatOutput").innerHTML += `
+    <p><b>You:</b> ${input}</p>
+    <p><b>AI:</b> ${reply}</p>
+  `;
+});
 
     // 💡 RECOMMEND
     document.getElementById("recommendBtn").addEventListener("click", () => {
