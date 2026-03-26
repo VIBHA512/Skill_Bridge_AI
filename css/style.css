@@ -493,6 +493,43 @@ button {
   font-weight: bold;
   cursor: pointer;
 }
+.right-panel {
+  display: flex;
+  flex-direction: column;
+  height: 80vh;
+}
+
+.chat-display {
+  flex: 1;
+  background: #0b1220;
+  padding: 15px;
+  border-radius: 10px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
+
+.chat-box {
+  display: flex;
+  gap: 10px;
+}
+
+.chat-box input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #1e293b;
+  color: white;
+}
+
+.chat-box button {
+  padding: 10px 15px;
+  background: linear-gradient(135deg, #22c55e, #06b6d4);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: white;
+}
 
 button:hover {
   opacity: 0.9;
