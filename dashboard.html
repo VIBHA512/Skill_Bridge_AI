@@ -25,6 +25,28 @@
     <p id="roleText">Loading...</p>
   </section>
 
+  <div class="form-container">
+  <h2>Enter Your Skills</h2>
+  <input type="text" id="skillsInput" placeholder="e.g. HTML, CSS, JS">
+  <button id="analyzeBtn">Analyze</button>
+</div>
+<div class="form-container">
+  <h2>Upload Resume</h2>
+  <input type="file" id="resumeInput">
+  <button onclick="uploadResume()">Upload</button>
+</div>
+  <div class="dashboard">
+  <h2>Skill Match Score</h2>
+  <p id="score">0%</p>
+</div>
+  <div class="form-container">
+  <h2>Ask AI</h2>
+  <input type="text" id="chatInput" placeholder="Ask career question">
+  <button onclick="chat()">Send</button>
+</div>
+
+<div id="chatOutput"></div>
+<div class="dashboard" id="resultSection"></div>
   <!-- FEATURES -->
   <section class="features" id="featuresSection">
     <!-- Dynamic content will come here -->
