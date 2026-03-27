@@ -261,7 +261,7 @@ document.getElementById("recommendBtn").addEventListener("click", () => {
     bestMatch || "Add more skills 😅";
 });
 
-// 🤖 TYPE EFFECT (MOVED OUTSIDE HTML)
+// 🤖 TYPE EFFECT
 function typeEffect(text, element) {
   let i = 0;
   element.innerHTML = "";
@@ -273,32 +273,62 @@ function typeEffect(text, element) {
   }, 20);
 }
 
-// 🤖 CHATBOT (STILL STATIC)
-document.getElementById("chatBtn").addEventListener("click", () => {
+// 🤖 HUGGING FACE API
+const HF_API_TOKEN = "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";
+
+async function askHuggingFace(prompt) {
+  const response = await fetch(
+    "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct",
+    {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${HF_API_TOKEN}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        inputs: prompt
+      })
+    }
+  );
+
+  return await response.json();
+}
+
+// 🤖 CHAT BUTTON LOGIC (REAL AI)
+document.getElementById("chatBtn").addEventListener("click", async () => {
 
   const inputBox = document.getElementById("chatInput");
-  const input = inputBox.value.toLowerCase();
+  const input = inputBox.value.trim();
   const chat = document.getElementById("chatOutput");
 
+  if (!input) return;
+
+  // User message
   chat.innerHTML += `<p><b>You:</b> ${input}</p>`;
   inputBox.value = "";
 
+  // AI placeholder
   const replyBox = document.createElement("p");
+  replyBox.innerHTML = "<b>AI:</b> Thinking...";
   chat.appendChild(replyBox);
 
-  let reply = "I can guide you 🚀";
+  try {
+    const result = await askHuggingFace(input);
 
-  if (input.includes("career")) {
-    reply = "Try AI, Web Dev or Data Science 📈";
-  } else if (input.includes("python")) {
-    reply = "Python → AI + Data Science 🔥";
-  } else if (input.includes("web")) {
-    reply = "HTML → CSS → JS → React 🚀";
+    let reply = "No response";
+
+    if (Array.isArray(result) && result[0]?.generated_text) {
+      reply = result[0].generated_text;
+    }
+
+    typeEffect(reply, replyBox);
+
+  } catch (error) {
+    console.error(error);
+    replyBox.innerHTML = "<b>AI:</b> Error fetching response 😢";
   }
 
-  typeEffect("AI: " + reply, replyBox);
 });
 </script>
-
 </body>
 </html> this is my dashboard.html do modifications in this 
