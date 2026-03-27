@@ -10,7 +10,6 @@
 
 <body>
 
-<!-- HERO -->
 <section class="hero">
   <h2>SkillBridge AI 🚀</h2>
   <p>Your AI-powered career companion</p>
@@ -18,9 +17,8 @@
 
 <div class="container">
 
-  <!-- LEFT PANEL -->
+  <!-- LEFT -->
   <div class="left-panel">
-
     <h3>Enter Skills</h3>
     <input type="text" id="skillsInput" placeholder="Python, HTML, ML">
 
@@ -36,108 +34,68 @@
     <input type="file" id="resumeInput">
     <button id="uploadBtn">Extract Skills</button>
 
-    <h3>Soft Skills</h3>
-    <input type="text" id="softSkills" placeholder="Communication, Leadership">
-
     <button id="analyzeBtn">Analyze Skill Gap</button>
     <button id="recommendBtn">Recommend Career</button>
-
   </div>
 
-  <!-- MIDDLE PANEL -->
+  <!-- MIDDLE -->
   <div class="middle-panel">
 
-    <!-- SCORE CARD -->
     <div class="result-card">
       <h3>📊 Scores</h3>
       <p>Technical: <span id="techScore">0%</span></p>
-      <p>Soft Skills: <span id="softScore">0%</span></p>
       <p>Overall: <span id="overallScore">0%</span></p>
-<canvas id="skillChart" height="150"></canvas>
-      <div class="progress-bar">
-        <div id="progressFill"></div>
-      </div>
+      <canvas id="skillChart"></canvas>
     </div>
 
-    <!-- CAREER -->
     <div class="result-card">
-      <h3>🎯 Recommended Career</h3>
+      <h3>🎯 AI Career Suggestion</h3>
       <p id="careerResult">--</p>
     </div>
 
-    <!-- SKILLS -->
     <div class="result-card">
       <h3>✅ Your Skills</h3>
       <p id="yourSkills"></p>
     </div>
 
-    <!-- MISSING -->
-    <div class="result-card">
-      <h3>📌 Missing Skills</h3>
-      <p id="missingSkills"></p>
-    </div>
-
-    <!-- COURSES -->
-    <div class="result-card">
-      <h3>📚 Courses</h3>
-      <ul id="courses"></ul>
-    </div>
-
-    <!-- ROADMAP -->
-    <div class="result-card">
-      <h3>🗺 Roadmap</h3>
-      <ol id="roadmap"></ol>
-    </div>
-
-    <!-- TRENDING -->
-    <div class="result-card">
-      <h3>🔥 Trending Skills</h3>
-      <p>AI, Cloud, Cybersecurity, Data Science</p>
-    </div>
-
   </div>
 
-  <!-- RIGHT PANEL -->
+  <!-- RIGHT -->
   <div class="right-panel">
-
     <h3>🤖 AI Chatbot</h3>
+    <div id="chatOutput"></div>
 
-    <div class="chat-display" id="chatOutput"></div>
-
-    <div class="chat-box">
-      <input type="text" id="chatInput" placeholder="Ask about careers...">
-      <button id="chatBtn">Send</button>
-    </div>
-
+    <input type="text" id="chatInput" placeholder="Ask anything...">
+    <button id="chatBtn">Send</button>
   </div>
 
 </div>
 
-<!-- SCRIPT -->
 <script type="module">
-import { db, auth } from "./js/firebase.js";
-import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-  
-// 🎯 SKILL DATA WITH WEIGHTS
-const careerSkills = {
-  "AI Engineer": {
-    skills: ["python", "machine learning", "deep learning", "nlp", "tensorflow"],
-  },
-  "Web Developer": {
-    skills: ["html", "css", "javascript", "react", "node.js"],
-  },
-  "Data Scientist": {
-    skills: ["python", "sql", "statistics", "machine learning"],
-  },
-  "Cybersecurity Analyst": {
-    skills: ["networking", "linux", "ethical hacking", "security"],
-  }
-};
 
-  let chart;
+// 🔑 ADD YOUR API KEY
+const API_KEY = "AIzaSyDaOEoGpS9wlP9SDfpd4D8Vhe2OsHEfor4";
 
-function updateChart(tech, soft, overall) {
+// 🤖 AI FUNCTION
+async function getAIResponse(prompt) {
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`,
+    {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        contents: [{ role: "user", parts: [{ text: prompt }] }]
+      })
+    }
+  );
 
+  const data = await res.json();
+  return data?.candidates?.[0]?.content?.parts?.[0]?.text || "No response";
+}
+
+// 📊 CHART
+let chart;
+function updateChart(score) {
   const ctx = document.getElementById("skillChart");
 
   if (chart) chart.destroy();
@@ -145,262 +103,86 @@ function updateChart(tech, soft, overall) {
   chart = new Chart(ctx, {
     type: "bar",
     data: {
-      labels: ["Technical", "Soft Skills", "Overall"],
+      labels: ["Score"],
       datasets: [{
-        label: "Score %",
-        data: [tech, soft, overall]
+        label: "%",
+        data: [score]
       }]
     }
   });
 }
-  
-// 📚 COURSE DATA
-const courseData = {
-  "python": "Python Bootcamp (Udemy)",
-  "machine learning": "ML by Andrew Ng",
-  "deep learning": "Deep Learning Specialization",
-  "sql": "SQL for Data Science",
-  "html": "HTML - freeCodeCamp",
-  "css": "CSS - freeCodeCamp",
-  "javascript": "JavaScript - freeCodeCamp",
-  "react": "React Course",
-  "node.js": "Node.js Guide",
-  "networking": "Networking Basics",
-  "linux": "Linux Fundamentals"
-};
 
-// 🧠 NORMALIZE SKILLS
-function cleanSkills(input) {
-  return input.toLowerCase().split(",").map(s => s.trim());
-}
-
-// 🎯 ANALYZE (SMART)
-document.getElementById("analyzeBtn").addEventListener("click", async () => {
-
-  const userSkills = cleanSkills(document.getElementById("skillsInput").value);
-  const career = document.getElementById("career").value;
-
-  const required = careerSkills[career].skills;
-
-  let matched = [];
-  let missing = [];
-
-  required.forEach(skill => {
-    if (userSkills.includes(skill)) matched.push(skill);
-    else missing.push(skill);
-  });
-
-  const techScore = Math.round((matched.length / required.length) * 100);
-  const softScore = Math.min(100, 50 + userSkills.length * 5);
-  const overall = Math.round((techScore + softScore) / 2);
-
-  // ✅ UPDATE CHART
-  updateChart(techScore, softScore, overall);
-
-  // ✅ FIRESTORE SAVE
-  const user = auth.currentUser;
-  if (user) {
-    await setDoc(doc(db, "analysis", user.uid), {
-      skills: userSkills,
-      career: career,
-      techScore,
-      softScore,
-      overall
-    });
-  }
-
-  // ✅ UI UPDATE
-  document.getElementById("techScore").innerText = techScore + "%";
-  document.getElementById("softScore").innerText = softScore + "%";
-  document.getElementById("overallScore").innerText = overall + "%";
-  document.getElementById("progressFill").style.width = overall + "%";
-
-  document.getElementById("yourSkills").innerText = matched.join(", ") || "None";
-  document.getElementById("missingSkills").innerText = missing.join(", ") || "None";
-
-  // COURSES
-  const courseList = document.getElementById("courses");
-  courseList.innerHTML = "";
-
-  missing.forEach(skill => {
-    if (courseData[skill]) {
-      courseList.innerHTML += `<li>${courseData[skill]}</li>`;
-    }
-  });
-
-  // ROADMAP
-  const roadmap = document.getElementById("roadmap");
-  roadmap.innerHTML = "";
-
-  missing.forEach((skill, i) => {
-    roadmap.innerHTML += `<li>Week ${i+1}: Master ${skill}</li>`;
-  });
-
-});
-
-// 💡 SMART CAREER RECOMMENDER
-document.getElementById("recommendBtn").addEventListener("click", () => {
-
-  const userSkills = cleanSkills(document.getElementById("skillsInput").value);
-
-  let bestMatch = "";
-  let bestScore = 0;
-
-  for (let career in careerSkills) {
-    let required = careerSkills[career].skills;
-    let matchCount = required.filter(skill => userSkills.includes(skill)).length;
-    let score = matchCount / required.length;
-
-    if (score > bestScore) {
-      bestScore = score;
-      bestMatch = career;
-    }
-  }
-
-  document.getElementById("careerResult").innerText =
-    bestMatch ? bestMatch + " 🚀" : "Add more skills 😅";
-
-});
-
-// 📄 RESUME (SMARTER FEEL)
+// 📄 RESUME ANALYSIS
 document.getElementById("uploadBtn").addEventListener("click", async () => {
 
   const file = document.getElementById("resumeInput").files[0];
+  if (!file) return alert("Upload resume first");
 
-  if (!file) {
-    alert("Upload resume first 😭");
-    return;
-  }
-
-  // 🔥 UI loading
-  document.getElementById("yourSkills").innerText = "Extracting skills... ⏳";
+  document.getElementById("yourSkills").innerText = "Reading resume...";
 
   const reader = new FileReader();
 
   reader.onload = async function () {
 
-    const typedArray = new Uint8Array(this.result);
-
-    const pdf = await pdfjsLib.getDocument(typedArray).promise;
+    const pdf = await pdfjsLib.getDocument(new Uint8Array(this.result)).promise;
 
     let fullText = "";
 
-    // 🔥 Extract ALL pages text
     for (let i = 1; i <= pdf.numPages; i++) {
       const page = await pdf.getPage(i);
       const content = await page.getTextContent();
-
-      const pageText = content.items.map(item => item.str).join(" ");
-      fullText += pageText + " ";
+      fullText += content.items.map(i => i.str).join(" ") + " ";
     }
 
-    fullText = fullText.toLowerCase();
+    // 🤖 AI ANALYSIS
+    const result = await getAIResponse(`
+Analyze this resume:
+${fullText}
 
-    // 🧠 SMART SKILL DATABASE
-    const skillsDB = [
-      "python","java","c++","html","css","javascript","react","node.js",
-      "sql","mongodb","machine learning","deep learning","nlp","tensorflow",
-      "excel","power bi","data analysis","aws","cloud computing",
-      "linux","networking","cybersecurity","git","github"
-    ];
+Give:
+1. Best career
+2. Skills
+3. Improvements
+`);
 
-    const synonyms = {
-      "ml": "machine learning",
-      "ai": "machine learning",
-      "js": "javascript",
-      "reactjs": "react",
-      "node": "node.js"
-    };
-
-    let foundSkills = [];
-
-    skillsDB.forEach(skill => {
-      if (fullText.includes(skill)) {
-        foundSkills.push(skill);
-      }
-    });
-
-    // 🔁 synonym match
-    Object.keys(synonyms).forEach(key => {
-      if (fullText.includes(key)) {
-        foundSkills.push(synonyms[key]);
-      }
-    });
-
-    // ❌ remove duplicates
-    foundSkills = [...new Set(foundSkills)];
-
-    // 🎯 UPDATE UI
-    if (foundSkills.length === 0) {
-      document.getElementById("yourSkills").innerText =
-        "No skills detected 😅";
-    } else {
-      document.getElementById("yourSkills").innerText =
-        "Extracted: " + foundSkills.join(", ");
-
-      // 🔥 AUTO-FILL INPUT
-      document.getElementById("skillsInput").value =
-        foundSkills.join(", ");
-    }
-
+    document.getElementById("careerResult").innerHTML =
+      result.replace(/\n/g, "<br>");
   };
 
   reader.readAsArrayBuffer(file);
 });
 
-// 🤖 ADVANCED CHATBOT
-function typeEffect(text, element) {
-  let i = 0;
-  element.innerHTML = "";
+// 🤖 CHATBOT
+document.getElementById("chatBtn").addEventListener("click", async () => {
 
-  let interval = setInterval(() => {
-    element.innerHTML += text.charAt(i);
-    i++;
-    if (i >= text.length) clearInterval(interval);
-  }, 20);
-}
+  const input = document.getElementById("chatInput").value.trim();
+  if (!input) return;
 
-document.getElementById("chatBtn").addEventListener("click", () => {
-
-  const inputBox = document.getElementById("chatInput");
-  const input = inputBox.value.toLowerCase();
   const chat = document.getElementById("chatOutput");
 
   chat.innerHTML += `<p><b>You:</b> ${input}</p>`;
-  inputBox.value = "";
 
-  // 🤖 Thinking effect
-  const thinkingMsg = document.createElement("p");
-  thinkingMsg.innerHTML = "<b>AI:</b> 🤖 Thinking...";
-  chat.appendChild(thinkingMsg);
+  const thinking = document.createElement("p");
+  thinking.innerHTML = "<b>AI:</b> Thinking...";
+  chat.appendChild(thinking);
 
-  setTimeout(() => {
+  const reply = await getAIResponse(input);
 
-    let reply = "Hey, I can guide you in your career 🚀";
-
-    if (input.includes("career")) {
-      reply = "Based on your interest, I recommend exploring high-growth domains like AI, Web Development, or Data Science 📈";
-    }
-    else if (input.includes("python")) {
-      reply = "Python is powerful! You can go into AI, Data Science, or Backend Development 🔥";
-    }
-    else if (input.includes("web")) {
-      reply = "Start with HTML, CSS, JS → then move to React & Node.js 🚀";
-    }
-    else if (input.includes("ai")) {
-      reply = "Roadmap: Python → Machine Learning → Deep Learning → Projects 🤖";
-    }
-    else if (input.includes("job")) {
-      reply = "Focus on projects + resume + internships + DSA practice 💼";
-    }
-
-    // 🎯 Replace thinking with typing effect
-    thinkingMsg.innerHTML = "<b>AI:</b> ";
-    typeEffect(reply, thinkingMsg);
-
-  }, 1200);
-
+  thinking.innerHTML = "<b>AI:</b> " + reply.replace(/\n/g, "<br>");
 });
+
+// 🎯 BASIC ANALYZE
+document.getElementById("analyzeBtn").addEventListener("click", () => {
+
+  const skills = document.getElementById("skillsInput").value.split(",");
+  const score = Math.min(100, skills.length * 15);
+
+  document.getElementById("techScore").innerText = score + "%";
+  document.getElementById("overallScore").innerText = score + "%";
+
+  updateChart(score);
+});
+
 </script>
 
 </body>
