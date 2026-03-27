@@ -6,10 +6,28 @@
   <link rel="stylesheet" href="css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+  <style>
+.chat-display {
+  max-height: 300px;
+  overflow-y: auto;
+  background: #0f172a;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.chat-display p {
+  background: #1e293b;
+  padding: 8px;
+  border-radius: 8px;
+  margin: 5px 0;
+  color: #fff;
+}
+</style>
 </head>
 
 <body>
 
+<!-- HERO -->
 <section class="hero">
   <h2>SkillBridge AI 🚀</h2>
   <p>Your AI-powered career companion</p>
@@ -17,8 +35,9 @@
 
 <div class="container">
 
-  <!-- LEFT -->
+  <!-- LEFT PANEL -->
   <div class="left-panel">
+
     <h3>Enter Skills</h3>
     <input type="text" id="skillsInput" placeholder="Python, HTML, ML">
 
@@ -34,68 +53,122 @@
     <input type="file" id="resumeInput">
     <button id="uploadBtn">Extract Skills</button>
 
+    <h3>Soft Skills</h3>
+    <input type="text" id="softSkills" placeholder="Communication, Leadership">
+
     <button id="analyzeBtn">Analyze Skill Gap</button>
     <button id="recommendBtn">Recommend Career</button>
+
   </div>
 
-  <!-- MIDDLE -->
+  <!-- MIDDLE PANEL -->
   <div class="middle-panel">
 
+    <!-- SCORE CARD -->
     <div class="result-card">
       <h3>📊 Scores</h3>
       <p>Technical: <span id="techScore">0%</span></p>
+      <p>Soft Skills: <span id="softScore">0%</span></p>
       <p>Overall: <span id="overallScore">0%</span></p>
-      <canvas id="skillChart"></canvas>
+<canvas id="skillChart" height="150"></canvas>
+      <div class="progress-bar">
+        <div id="progressFill"></div>
+      </div>
     </div>
 
+    <!-- CAREER -->
     <div class="result-card">
-      <h3>🎯 AI Career Suggestion</h3>
+      <h3>🎯 Recommended Career</h3>
       <p id="careerResult">--</p>
     </div>
 
+    <!-- SKILLS -->
     <div class="result-card">
       <h3>✅ Your Skills</h3>
       <p id="yourSkills"></p>
     </div>
 
+    <!-- MISSING -->
+    <div class="result-card">
+      <h3>📌 Missing Skills</h3>
+      <p id="missingSkills"></p>
+    </div>
+
+    <!-- COURSES -->
+    <div class="result-card">
+      <h3>📚 Courses</h3>
+      <ul id="courses"></ul>
+    </div>
+
+    <!-- ROADMAP -->
+    <div class="result-card">
+      <h3>🗺 Roadmap</h3>
+      <ol id="roadmap"></ol>
+    </div>
+
+    <!-- TRENDING -->
+    <div class="result-card">
+      <h3>🔥 Trending Skills</h3>
+      <p>AI, Cloud, Cybersecurity, Data Science</p>
+    </div>
+
   </div>
 
-  <!-- RIGHT -->
+  <!-- RIGHT PANEL -->
   <div class="right-panel">
-    <h3>🤖 AI Chatbot</h3>
-    <div id="chatOutput"></div>
+function typeEffect(text, element) {
+  let i = 0;
+  element.innerHTML = "";
 
-    <input type="text" id="chatInput" placeholder="Ask anything...">
-    <button id="chatBtn">Send</button>
+  let interval = setInterval(() => {
+    element.innerHTML += text.charAt(i);
+    i++;
+    if (i >= text.length) clearInterval(interval);
+  }, 20);
+}
+    <h3>🤖 AI Chatbot</h3>
+
+    <div class="chat-display" id="chatOutput"></div>
+
+    <div class="chat-box">
+      <input type="text" id="chatInput" placeholder="Ask about careers...">
+      <button id="chatBtn">Send</button>
+    </div>
+
   </div>
 
 </div>
 
+<!-- SCRIPT -->
 <script type="module">
+import { db, auth } from "./js/firebase.js";
+import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// 🔑 ADD YOUR API KEY
-const API_KEY = "AIzaSyCcTAdHdM_xxzrcT7JFFaPEvNEkwGGapG0";
+// 🎯 DATA
+const careerSkills = {
+  "AI Engineer": ["python", "machine learning", "deep learning", "nlp", "tensorflow"],
+  "Web Developer": ["html", "css", "javascript", "react", "node.js"],
+  "Data Scientist": ["python", "sql", "statistics", "machine learning"],
+  "Cybersecurity Analyst": ["networking", "linux", "ethical hacking", "security"]
+};
 
-// 🤖 AI FUNCTION
-async function getAIResponse(prompt) {
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`,
-    {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({
-        contents: [{ role: "user", parts: [{ text: prompt }] }]
-      })
-    }
-  );
+const courseData = {
+  "python": "Python Bootcamp",
+  "machine learning": "ML by Andrew Ng",
+  "deep learning": "Deep Learning Specialization",
+  "sql": "SQL Course",
+  "html": "HTML - freeCodeCamp",
+  "css": "CSS - freeCodeCamp",
+  "javascript": "JavaScript Course",
+  "react": "React Course",
+  "node.js": "Node.js Guide",
+  "networking": "Networking Basics",
+  "linux": "Linux Fundamentals"
+};
 
-  const data = await res.json();
-  return data?.candidates?.[0]?.content?.parts?.[0]?.text || "No response";
-}
-
-// 📊 CHART
+// 🎨 CHART
 let chart;
-function updateChart(score) {
+function updateChart(tech, soft, overall) {
   const ctx = document.getElementById("skillChart");
 
   if (chart) chart.destroy();
@@ -103,87 +176,138 @@ function updateChart(score) {
   chart = new Chart(ctx, {
     type: "bar",
     data: {
-      labels: ["Score"],
+      labels: ["Technical", "Soft", "Overall"],
       datasets: [{
-        label: "%",
-        data: [score]
+        label: "Score %",
+        data: [tech, soft, overall]
       }]
     }
   });
 }
 
-// 📄 RESUME ANALYSIS
-document.getElementById("uploadBtn").addEventListener("click", async () => {
+// 🧠 CLEAN INPUT
+function cleanSkills(input) {
+  return input.toLowerCase().split(",").map(s => s.trim());
+}
 
-  const file = document.getElementById("resumeInput").files[0];
-  if (!file) return alert("Upload resume first");
+// 🎯 ANALYZE BUTTON
+document.getElementById("analyzeBtn").addEventListener("click", async () => {
 
-  document.getElementById("yourSkills").innerText = "Reading resume...";
+  const userSkills = cleanSkills(document.getElementById("skillsInput").value);
+  const career = document.getElementById("career").value;
+  const required = careerSkills[career];
 
-  const reader = new FileReader();
+  let matched = required.filter(skill => userSkills.includes(skill));
+  let missing = required.filter(skill => !userSkills.includes(skill));
 
-  reader.onload = async function () {
+  const techScore = Math.round((matched.length / required.length) * 100);
+  const softScore = Math.min(100, 50 + userSkills.length * 5);
+  const overall = Math.round((techScore + softScore) / 2);
 
-    const pdf = await pdfjsLib.getDocument(new Uint8Array(this.result)).promise;
+  updateChart(techScore, softScore, overall);
 
-    let fullText = "";
+  // UI
+  document.getElementById("techScore").innerText = techScore + "%";
+  document.getElementById("softScore").innerText = softScore + "%";
+  document.getElementById("overallScore").innerText = overall + "%";
+  document.getElementById("progressFill").style.width = overall + "%";
 
-    for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i);
-      const content = await page.getTextContent();
-      fullText += content.items.map(i => i.str).join(" ") + " ";
+  document.getElementById("yourSkills").innerHTML =
+    `✅ ${matched.join(", ") || "None"}`;
+
+  document.getElementById("missingSkills").innerHTML =
+    `❌ ${missing.join(", ") || "None"}`;
+
+  // COURSES
+  const courseList = document.getElementById("courses");
+  courseList.innerHTML = "";
+  missing.forEach(skill => {
+    if (courseData[skill]) {
+      courseList.innerHTML += `<li>🎓 ${courseData[skill]}</li>`;
     }
+  });
 
-    // 🤖 AI ANALYSIS
-    const result = await getAIResponse(`
-Analyze this resume:
-${fullText}
+  // ROADMAP
+  const roadmap = document.getElementById("roadmap");
+  roadmap.innerHTML = "";
+  missing.forEach((skill, i) => {
+    roadmap.innerHTML += `<li>Week ${i+1}: Learn ${skill}</li>`;
+  });
 
-Give:
-1. Best career
-2. Skills
-3. Improvements
-`);
-
-    document.getElementById("careerResult").innerHTML =
-      result.replace(/\n/g, "<br>");
-  };
-
-  reader.readAsArrayBuffer(file);
+  // 🔥 FIRESTORE SAVE (FIXED)
+  const user = auth.currentUser;
+  if (user) {
+    await setDoc(doc(db, "analysis", user.uid), {
+      skills: userSkills,
+      career,
+      techScore,
+      softScore,
+      overall
+    });
+  }
 });
 
-// 🤖 CHATBOT
-document.getElementById("chatBtn").addEventListener("click", async () => {
+// 🎯 CAREER RECOMMEND
+document.getElementById("recommendBtn").addEventListener("click", () => {
 
-  const input = document.getElementById("chatInput").value.trim();
-  if (!input) return;
+  const userSkills = cleanSkills(document.getElementById("skillsInput").value);
 
+  let bestMatch = "";
+  let bestScore = 0;
+
+  for (let career in careerSkills) {
+    let required = careerSkills[career];
+    let matchCount = required.filter(skill => userSkills.includes(skill)).length;
+    let score = matchCount / required.length;
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestMatch = career;
+    }
+  }
+
+  document.getElementById("careerResult").innerText =
+    bestMatch || "Add more skills 😅";
+});
+
+// 🤖 TYPE EFFECT (MOVED OUTSIDE HTML)
+function typeEffect(text, element) {
+  let i = 0;
+  element.innerHTML = "";
+
+  let interval = setInterval(() => {
+    element.innerHTML += text.charAt(i);
+    i++;
+    if (i >= text.length) clearInterval(interval);
+  }, 20);
+}
+
+// 🤖 CHATBOT (STILL STATIC)
+document.getElementById("chatBtn").addEventListener("click", () => {
+
+  const inputBox = document.getElementById("chatInput");
+  const input = inputBox.value.toLowerCase();
   const chat = document.getElementById("chatOutput");
 
   chat.innerHTML += `<p><b>You:</b> ${input}</p>`;
+  inputBox.value = "";
 
-  const thinking = document.createElement("p");
-  thinking.innerHTML = "<b>AI:</b> Thinking...";
-  chat.appendChild(thinking);
+  const replyBox = document.createElement("p");
+  chat.appendChild(replyBox);
 
-  const reply = await getAIResponse(input);
+  let reply = "I can guide you 🚀";
 
-  thinking.innerHTML = "<b>AI:</b> " + reply.replace(/\n/g, "<br>");
+  if (input.includes("career")) {
+    reply = "Try AI, Web Dev or Data Science 📈";
+  } else if (input.includes("python")) {
+    reply = "Python → AI + Data Science 🔥";
+  } else if (input.includes("web")) {
+    reply = "HTML → CSS → JS → React 🚀";
+  }
+
+  typeEffect("AI: " + reply, replyBox);
 });
-
-// 🎯 BASIC ANALYZE
-document.getElementById("analyzeBtn").addEventListener("click", () => {
-
-  const skills = document.getElementById("skillsInput").value.split(",");
-  const score = Math.min(100, skills.length * 15);
-
-  document.getElementById("techScore").innerText = score + "%";
-  document.getElementById("overallScore").innerText = score + "%";
-
-  updateChart(score);
-});
-
 </script>
 
 </body>
-</html>
+</html> this is my dashboard.html do modifications in this 
